@@ -1,0 +1,14 @@
+# macOS system files
+.DS_Store
+
+# PyCharm / IntelliJ IDE settings
+.idea/
+*.iml
+
+# Python compiled files (Bytecode)
+__pycache__/
+*.pyc
+
+# Virtual Environment
+.venv/
+venv/
