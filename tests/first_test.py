@@ -1,18 +1,21 @@
+import os
+
 from playwright.sync_api import Page, expect
 
 
-def test_login_with_invalid_creds(page: Page):
+def test_login_with_invalid_creds(page: Page, configs: dict):
     open_home_page(page)
     page.get_by_text("Log in", exact=True).click()
-    login_user(page, "soul.2fast4u@gmail.com", "invalid-password")
+    login_user(page, configs["email"], "invalid-password")
 
     expect(page.locator("#content-desktop").get_by_text("Invalid Email or password.")).to_be_visible()
     expect(page.locator("#content-desktop .common-flash-info")).to_have_text("Invalid Email or password.")
 
 
-def test_search_project_in_company(page: Page):
-    page.goto("https://app.testomat.io/users/sign_in")
-    login_user(page, "soul.2fast4u@gmail.com", "variable-password")
+def test_search_project_in_company(page: Page, configs: dict):
+    page.goto(configs["login_url"])
+    login_user(page, configs["email"], configs["password"])
+    # Note for Roma. I have a personal Testomat project, so I need to do an extra proj selection.
     page.locator("#company_id").click()
     page.locator("#company_id").select_option("QA Club Lviv")
     target_project = "python manufacture"
@@ -22,9 +25,9 @@ def test_search_project_in_company(page: Page):
     # expect(page.locator("ul li h3")).to_have_text(target_project, use_inner_text=True)
 
 
-def test_open_free_project(page: Page):
-    page.goto("https://app.testomat.io/users/sign_in")
-    login_user(page, "soul.2fast4u@gmail.com", "variable-password")
+def test_open_free_project(page: Page, configs: dict):
+    page.goto(configs["login_url"])
+    login_user(page, configs["email"], configs["password"])
     page.locator("#company_id").click()
     page.locator("#company_id").select_option("Free Projects")
 
@@ -35,7 +38,7 @@ def test_open_free_project(page: Page):
 
 
 def open_home_page(page: Page):
-    page.goto("https://testomat.io/")
+    page.goto(os.getenv("BASE_URL"))
 
 
 def login_user(page: Page, email: str, password: str):
