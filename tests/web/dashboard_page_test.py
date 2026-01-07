@@ -81,3 +81,9 @@ def test_open_free_project(page: Page, login):
     dashboard.select_company("Free Projects")
 
     expect(page.get_by_text("You have not created any projects yet")).to_be_visible(timeout=10000)
+
+
+def test_dashboard_table_is_not_empty(page: Page, login):
+    dashboard = DashboardPage(page)
+    dashboard.switch_to_table_view()
+    expect(dashboard.get_table_rows_locator).not_to_have_count(0)
