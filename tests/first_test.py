@@ -27,13 +27,8 @@ def test_login_with_invalid_creds(page: Page, configs: Config):
 
 
 def test_search_project_in_company(page: Page, login):
-    # Note for Roma. I have a personal Testomat project, so I need to do an extra proj selection.
-    page.locator("#company_id").click()
-    page.locator("#company_id").select_option("QA Club Lviv")
     search_project(page, TARGET_PROJECT)
-
     expect(page.get_by_role("heading", name=TARGET_PROJECT)).to_be_visible()
-    # expect(page.locator("ul li h3")).to_have_text(target_project, use_inner_text=True)
 
 
 def test_open_free_project(page: Page, login):
