@@ -1,20 +1,10 @@
-import pytest
 from playwright.sync_api import Page, expect
 
 from src.web.pages.DashboardPage import DashboardPage
-from src.web.pages.LoginPage import LoginPage
 from tests.conftest import Config
 
 TARGET_PROJECT_NAME = "python manufacture"
 EMPTY_PROJECT_NAME = "Industrial"
-
-
-@pytest.fixture(scope="function")
-def login(page: Page, configs: Config):
-    login_page = LoginPage(page)
-    login_page.open()
-    login_page.is_loaded()
-    login_page.login(configs.email, configs.password)
 
 
 def test_search_project(page: Page, login):
