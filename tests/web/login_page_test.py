@@ -1,31 +1,28 @@
 from faker import Faker
-from playwright.sync_api import Page
 
-from src.web.pages.DashboardPage import DashboardPage
-from src.web.pages.HomePage import HomePage
-from src.web.pages.LoginPage import LoginPage
+from src.web.Application import Application
 from tests.conftest import Config
 
 
-def test_login_invalid(page: Page, configs: Config):
-    home_page = HomePage(page)
+def test_login_invalid(app: Application, configs: Config):
+    home_page = app.home_page
     home_page.open()
     home_page.is_loaded()
     home_page.click_login()
 
-    login_page = LoginPage(page)
+    login_page = app.login_page
     login_page.is_loaded()
     login_page.login(configs.email, Faker().password(length=10))
     login_page.invalid_login_message_visible()
 
 
-def test_login_with_valid_creds(page: Page, configs: Config):
-    home_page = HomePage(page)
+def test_login_with_valid_creds(app: Application, configs: Config):
+    home_page = app.home_page
     home_page.open()
     home_page.is_loaded()
     home_page.click_login()
 
-    login_page = LoginPage(page)
+    login_page = app.login_page
     login_page.is_loaded()
     login_page.login(configs.email, configs.password)
-    DashboardPage(page).is_loaded()
+    app.dashboard_page.is_loaded()
