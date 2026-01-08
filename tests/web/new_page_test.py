@@ -10,16 +10,23 @@ def test_overview_elements(page: Page, login):
     new_project.open()
     new_project.is_loaded()
 
+
 def test_navigate_how_to_start(page: Page, login):
     new_project = NewProjectPage(page)
     new_project.open()
     new_project.click_how_to_start()
 
-def test_create_new_project(page: Page, login):
-    new_project = NewProjectPage(page).open().is_loaded()
-    project_details_page = ProjectDeatilsPage(page)
-    target_project_name = Faker().sentence()
 
-    new_project.fill_project_title(target_project_name)
-    new_project.click_create()
-    project_details_page.is_loaded()
+def test_create_new_project(page: Page, login):
+    target_project_name = Faker().company()
+
+    (NewProjectPage(page)
+     .open()
+     .is_loaded()
+     .fill_project_title(target_project_name)
+     .click_create())
+
+    (ProjectDeatilsPage(page).
+     is_loaded()
+     .project_name_is(target_project_name)
+     .close_readme())
