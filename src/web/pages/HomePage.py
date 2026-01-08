@@ -1,8 +1,8 @@
-from playwright.sync_api import expect
+from playwright.sync_api import expect, Page
 
 
 class HomePage:
-    def __init__(self, page):
+    def __init__(self, page: Page):
         self.page = page
 
     def open(self):

@@ -1,11 +1,13 @@
 from playwright.sync_api import Page, expect, Locator
 
 from src.web.components.ProjectCard import ProjectCard
+from src.web.components.SideBar import SideBar
 
 
 class DashboardPage:
     def __init__(self, page: Page):
         self.page = page
+        self.side_bar = SideBar(page)
 
         self._header_title = page.locator("h2", has_text="Projects")
         self._company_dropdown = page.locator("#company_id")

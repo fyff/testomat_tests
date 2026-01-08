@@ -31,7 +31,7 @@ class ProjectCard:
         demo_badge = self._badges.filter(has_text="Demo")
         #TODO consultation required. There was regexp.(re.compile(r"class"))
         expect(demo_badge).to_be_visible()
-        expect(demo_badge).to_have_class(["common-badge", "common-badge-project-demo"])
+        expect(demo_badge).to_have_class("common-badge common-badge-project-demo")
 
     def has_team_members_count(self, count: int):
         """

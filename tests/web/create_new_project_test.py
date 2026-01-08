@@ -1,5 +1,5 @@
 from faker import Faker
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 
 from src.web.pages.NewProjectPage import NewProjectPage
 from src.web.pages.ProjectDeatilsPage import ProjectDeatilsPage
@@ -26,7 +26,12 @@ def test_create_new_project(page: Page, login):
      .fill_project_title(target_project_name)
      .click_create())
 
-    (ProjectDeatilsPage(page).
-     is_loaded()
-     .project_name_is(target_project_name)
+    (ProjectDeatilsPage(page)
+     .is_loaded()
+     .empty_project_name_is(target_project_name)
      .close_readme())
+
+    (ProjectDeatilsPage(page).side_bar
+     .open()
+     .is_loaded())
+    expect(ProjectDeatilsPage(page).side_bar.tests_link).to_be_visible()
