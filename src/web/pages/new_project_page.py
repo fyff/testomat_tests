@@ -2,7 +2,7 @@ from typing import Self
 
 from playwright.sync_api import expect, Page
 
-from src.web.pages.ProjectDeatilsPage import ProjectDeatilsPage
+from src.web.pages.project_details_page import ProjectDeatilsPage
 
 
 class NewProjectPage:

@@ -29,7 +29,7 @@ class ProjectCard:
 
     def is_demo_project(self):
         demo_badge = self._badges.filter(has_text="Demo")
-        #TODO consultation required. There was regexp.(re.compile(r"class"))
+        # TODO consultation required. There was regexp.(re.compile(r"class"))
         expect(demo_badge).to_be_visible()
         expect(demo_badge).to_have_class("common-badge common-badge-project-demo")
 

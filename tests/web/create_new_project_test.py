@@ -3,18 +3,21 @@ from faker import Faker
 from src.web.Application import Application
 
 
+@pytest.mark.web
 def test_overview_elements(logged_app: Application):
     new_project = logged_app.new_project_page
     new_project.open()
     new_project.is_loaded()
 
 
+@pytest.mark.web
 def test_navigate_how_to_start(logged_app: Application):
     new_project = logged_app.new_project_page
     new_project.open()
     new_project.click_how_to_start()
 
 
+@pytest.mark.web
 def test_create_new_project(logged_app: Application):
     target_project_name = Faker().company()
 

@@ -1,7 +1,7 @@
 from playwright.sync_api import Page, expect, Locator
 
-from src.web.components.ProjectCard import ProjectCard
-from src.web.components.SideBar import SideBar
+from src.web.components.project_card import ProjectCard
+from src.web.components.side_bar import SideBar
 
 
 class DashboardPage:

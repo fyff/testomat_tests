@@ -6,7 +6,6 @@ from tests.conftest import Config
 
 faker = Faker()
 
-
 invalid_login_test_cases = [
     # ECP: Invalid Credentials
     pytest.param("config_email", faker.password(), id="valid_email_invalid_password"),
@@ -52,6 +51,7 @@ invalid_login_test_cases = [
 ]
 
 
+@pytest.mark.web
 @pytest.mark.parametrize("email, password", invalid_login_test_cases)
 def test_login_invalid_ecp_bva(shared_page: Application, configs: Config, email: str, password: str):
     if email == "config_email":
@@ -66,6 +66,9 @@ def test_login_invalid_ecp_bva(shared_page: Application, configs: Config, email:
 
     shared_page.page.wait_for_timeout(2000)
 
+
+@pytest.mark.smoke
+@pytest.mark.web
 def test_login_with_valid_creds(app: Application, configs: Config):
     home_page = app.home_page
     home_page.open()
