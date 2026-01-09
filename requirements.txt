@@ -1,5 +1,6 @@
-faker==39.0.0
+faker==40.1.0
 pytest==9.0.2
+pytest-html==4.1.1
+pytest-playwright==0.7.2
 python-dotenv==1.2.1
 playwright==1.57.0
-pytest-playwright==0.7.2

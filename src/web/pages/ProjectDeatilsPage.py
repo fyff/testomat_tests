@@ -21,5 +21,6 @@ class ProjectDeatilsPage(Page):
         expect(self.page.locator(".sticky-header h2")).to_have_text(expected_name)
         return self
 
-    def close_readme(self):
+    def close_readme(self) -> Self:
         self.page.locator(".back .third-btn").click()
+        return self
