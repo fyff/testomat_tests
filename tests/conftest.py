@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import pytest
 from dotenv import load_dotenv
-from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright
+from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright, ViewportSize
 
 from src.web.Application import Application
 
@@ -26,7 +26,7 @@ class Config:
 
 
 @pytest.fixture(scope="session")
-def configs():
+def configs() -> Config:
     return Config(
         base_url=os.getenv("BASE_URL"),
         app_base_url=os.getenv("BASE_APP_URL"),
@@ -89,9 +89,10 @@ def shared_browser(browser_instance: Browser, configs) -> Page:
 
 
 def build_browser_instance(browser_instance: Browser, configs: Config) -> BrowserContext:
+    viewport: ViewportSize = {"width": 1366, "height": 768}
     return browser_instance.new_context(
         base_url=configs.app_base_url,
-        viewport={"width": 1366, "height": 768},
+        viewport=viewport,
         locale="uk-UA",
         timezone_id="Europe/Kyiv",
         record_video_dir="test-result/videos/",
