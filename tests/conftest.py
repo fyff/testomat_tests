@@ -71,15 +71,16 @@ def logged_context(browser_instance: Browser, configs: Config) -> BrowserContext
 
 
 @pytest.fixture(scope="function")
-def logged_app(logged_context: BrowserContext) -> Application:
+def logged_app(logged_context: BrowserContext, configs: Config) -> Application:
     page = logged_context.new_page()
+    page.goto(configs.app_base_url)
     yield Application(page)
     page.close()
 
 
 # 3. Shared page for parametrized tests (module scope) - reuses same page across test params
 @pytest.fixture(scope="module")
-def shared_browser(browser_instance: Browser, configs) -> Page:
+def shared_browser(browser_instance: Browser, configs: Config) -> Page:
     context = build_browser_instance(browser_instance, configs)
 
     page = context.new_page()
@@ -104,3 +105,4 @@ def build_browser_instance(browser_instance: Browser, configs: Config) -> Browse
 def shared_page(shared_browser: Page) -> Application:
     yield Application(shared_browser)
     clear_browser_state(shared_browser)
+    shared_browser.reload()
