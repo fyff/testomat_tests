@@ -1,3 +1,4 @@
+import pytest
 from faker import Faker
 
 from src.web.Application import Application
