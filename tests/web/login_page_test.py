@@ -6,6 +6,13 @@ from tests.conftest import Config
 
 faker = Faker()
 
+
+@pytest.fixture
+def slow_down(shared_page):
+    yield
+    shared_page.page.wait_for_timeout(2000)
+
+
 invalid_login_test_cases = [
     # ECP: Invalid Credentials
     pytest.param("config_email", faker.password(), id="valid_email_invalid_password"),
@@ -53,7 +60,7 @@ invalid_login_test_cases = [
 
 @pytest.mark.web
 @pytest.mark.parametrize("email, password", invalid_login_test_cases)
-def test_login_invalid_ecp_bva(shared_page: Application, configs: Config, email: str, password: str):
+def test_login_invalid_creds(shared_page: Application, configs: Config, email: str, password: str, slow_down):
     if email == "config_email":
         email = configs.email
     if password == "config_password":
@@ -63,8 +70,6 @@ def test_login_invalid_ecp_bva(shared_page: Application, configs: Config, email:
     shared_page.login_page.is_loaded()
     shared_page.login_page.login(email, password)
     shared_page.login_page.invalid_login_message_visible()
-
-    shared_page.page.wait_for_timeout(2000)
 
 
 @pytest.mark.smoke
