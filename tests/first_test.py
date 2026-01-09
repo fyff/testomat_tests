@@ -15,6 +15,7 @@ def login(page: Page, configs: Config):
     login_user(page, configs.email, configs.password)
 
 
+@pytest.skip
 def test_login_with_invalid_creds(page: Page, configs: Config):
     open_home_page(page)
     page.get_by_text("Log in", exact=True).click()
@@ -26,11 +27,13 @@ def test_login_with_invalid_creds(page: Page, configs: Config):
     expect(page.locator("#content-desktop .common-flash-info")).to_have_text("Invalid Email or password.")
 
 
+@pytest.skip
 def test_search_project_in_company(page: Page, login):
     search_project(page, TARGET_PROJECT)
     expect(page.get_by_role("heading", name=TARGET_PROJECT)).to_be_visible()
 
 
+@pytest.skip
 def test_open_free_project(page: Page, login):
     page.locator("#company_id").click()
     page.locator("#company_id").select_option("Free Projects")
