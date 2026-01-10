@@ -1,5 +1,6 @@
 import pytest
 from faker import Faker
+from playwright.sync_api import expect
 
 from src.web.Application import Application
 
@@ -15,7 +16,12 @@ def test_overview_elements(logged_app: Application):
 def test_navigate_how_to_start(logged_app: Application):
     new_project = logged_app.new_project_page
     new_project.open()
-    new_project.click_how_to_start()
+    with logged_app.page.expect_popup() as page_info:
+        new_project.click_how_to_start()
+    new_page = page_info.value
+    expect(new_page).to_have_url("https://docs.testomat.io/getting-started/")
+    new_page.close()
+    new_project.is_loaded()
 
 
 @pytest.mark.web
