@@ -17,7 +17,7 @@ def test_search_project(logged_app: Application):
 
 
 @pytest.mark.web
-def overview_test_project_card_details(logged_app: Application):
+def test_overview_project_card_details(logged_app: Application):
     card = logged_app.dashboard_page.get_project(TARGET_PROJECT_NAME)
     card.has_title("python manufacture")
     card.has_test_count("26 tests")
@@ -76,15 +76,15 @@ def test_create_new_project_navigation(logged_app: Application, configs: Config)
 
 
 @pytest.mark.web
-def test_open_free_project(logged_app: Application):
-    dashboard = logged_app.dashboard_page
-    dashboard.select_company("Free Projects")
-
-    expect(logged_app.page.get_by_text("You have not created any projects yet")).to_be_visible(timeout=10000)
-
-
-@pytest.mark.web
 def test_dashboard_table_is_not_empty(logged_app: Application):
     dashboard = logged_app.dashboard_page
     dashboard.switch_to_table_view()
     expect(dashboard.get_table_rows_locator).not_to_have_count(0)
+
+
+@pytest.mark.web
+def test_open_free_project(isolated_logged_app: Application):
+    dashboard = isolated_logged_app.dashboard_page
+    dashboard.select_company("Free Projects")
+
+    expect(isolated_logged_app.page.get_by_text("You have not created any projects yet")).to_be_visible(timeout=10000)
