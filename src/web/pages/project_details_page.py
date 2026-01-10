@@ -11,7 +11,7 @@ class ProjectDeatilsPage(Page):
         self.side_bar = SideBar(page)
 
     def is_loaded(self) -> Self:
-        expect(self.page.locator(".sticky-header")).to_be_visible()
+        expect(self.page.locator(".sticky-header")).to_be_visible(timeout=10000)
         expect(self.page.locator(".mainnav-menu")).to_be_visible()
         expect(self.page.locator("[placeholder='First Suite']")).to_be_visible()
         expect(self.page.get_by_role("button", name="Suite")).to_be_visible()
