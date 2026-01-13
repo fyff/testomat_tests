@@ -1,5 +1,6 @@
 from playwright.sync_api import Page, expect, Locator
 
+from src.web.components.auth_header import AuthHeader
 from src.web.components.project_card import ProjectCard
 from src.web.components.side_bar import SideBar
 
@@ -8,6 +9,7 @@ class DashboardPage:
     def __init__(self, page: Page):
         self.page = page
         self.side_bar = SideBar(page)
+        self.auth_header = AuthHeader(page)
 
         self._header_title = page.locator("h2", has_text="Projects")
         self._company_dropdown = page.locator("#company_id")
@@ -21,6 +23,7 @@ class DashboardPage:
         self._table_rows = page.locator("#myTable tbody tr")
 
     def is_loaded(self):
+        expect(self.auth_header.is_loaded())
         expect(self._header_title).to_be_visible()
         expect(self.page.locator(".common-flash-success-right")).to_be_visible()
         expect(self.page.locator(".common-flash-success-right")).to_have_text("Signed in successfully")

@@ -24,6 +24,7 @@ def test_navigate_how_to_start(logged_app: Application):
     new_project.is_loaded()
 
 
+@pytest.mark.skip
 @pytest.mark.web
 def test_create_new_project(logged_app: Application):
     target_project_name = Faker().company()

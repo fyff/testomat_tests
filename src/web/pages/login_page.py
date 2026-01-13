@@ -5,6 +5,8 @@ class LoginPage:
     def __init__(self, page: Page):
         self.page = page
 
+        self.sign_out_message = page.locator("#content-desktop .common-flash-info-right")
+
     def open(self):
         self.page.goto("/users/sign_in")
 
