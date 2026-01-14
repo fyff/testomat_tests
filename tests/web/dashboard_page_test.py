@@ -19,7 +19,7 @@ def test_search_project(logged_app: Application):
 @pytest.mark.web
 def test_overview_project_card_details(logged_app: Application):
     card = logged_app.dashboard_page.get_project(TARGET_PROJECT_NAME)
-    card.has_title("python manufacture")
+    card.has_title(TARGET_PROJECT_NAME)
     card.has_test_count("26 tests")
     card.has_badge("Classical")
     card.has_badge("Pytest")
@@ -36,7 +36,8 @@ def test_open_project(logged_app: Application, configs: Config):
     project.open()
 
     expect(logged_app.page).to_have_url(configs.app_base_url + "/projects/pythonmanufacture/")
-    # TODO project_details.is_loaded(TARGET_PROJECT)
+    expect(logged_app.page.locator("#ember42")).to_be_visible()
+    expect(logged_app.page.locator("#ember42")).to_have_text("Python manufacture")
 
 
 @pytest.mark.web
@@ -90,6 +91,7 @@ def test_open_free_project(isolated_logged_app: Application):
     expect(isolated_logged_app.page.get_by_text("You have not created any projects yet")).to_be_visible(timeout=10000)
 
 
+@pytest.mark.smoke
 @pytest.mark.web
 def test_sign_out(isolated_logged_app: Application):
     dashboard = isolated_logged_app.dashboard_page

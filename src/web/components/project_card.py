@@ -1,19 +1,18 @@
-from playwright.sync_api import Locator, Page, expect
+from playwright.sync_api import Locator, expect
 
 
 class ProjectCard:
-    def __init__(self, page: Page, root_locator: Locator):
-        self.page = page
-        self.root = root_locator
+    def __init__(self, card: Locator):
+        self.card = card
 
-        self._title = self.root.locator("h3")
-        self._link = self.root.locator("a").first
-        self._stats = self.root.locator("p.text-gray-500")
-        self._badges = self.root.locator(".project-badges .common-badge")
+        self._title = self.card.locator("h3")
+        self._link = self.card.locator("a").first
+        self._stats = self.card.locator("p.text-gray-500")
+        self._badges = self.card.locator(".project-badges .common-badge")
         # Locates only the image tags inside the user section
-        self._avatar_imgs = self.root.locator(".inline-flex img")
+        self._avatar_imgs = self.card.locator(".inline-flex img")
         # Locates the "+N members" overflow circle if it exists
-        self._avatar_overflow = self.root.locator(".inline-flex div.rounded-full")
+        self._avatar_overflow = self.card.locator(".inline-flex div.rounded-full")
 
     def open(self):
         self._link.click()

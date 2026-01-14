@@ -1,7 +1,7 @@
 from playwright.sync_api import expect, Page
 
 
-class HomePage:
+class LandingPage:
     def __init__(self, page: Page):
         self.page = page
 
