@@ -5,7 +5,7 @@ import pytest
 from dotenv import load_dotenv
 from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright, ViewportSize
 
-from src.web.Application import Application
+from src.web.application import Application
 
 load_dotenv()
 

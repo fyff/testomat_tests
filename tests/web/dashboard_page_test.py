@@ -1,7 +1,7 @@
 import pytest
 from playwright.sync_api import expect
 
-from src.web.Application import Application
+from src.web.application import Application
 from tests.conftest import Config
 
 TARGET_PROJECT_NAME = "python manufacture"

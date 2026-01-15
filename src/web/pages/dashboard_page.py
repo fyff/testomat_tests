@@ -23,11 +23,9 @@ class DashboardPage:
         self._table_rows = page.locator("#myTable tbody tr")
 
     def is_loaded(self):
-        expect(self.auth_header.is_loaded())
+        self.auth_header.is_loaded()
         expect(self._header_title).to_be_visible()
-        expect(self.page.locator(".common-flash-success-right")).to_be_visible()
-        expect(self.page.locator(".common-flash-success-right")).to_have_text("Signed in successfully")
-        expect(self.page.locator(".common-flash-success-right", has_text="Signed in successfully")).to_be_visible()
+        expect(self._flash_message).to_have_text("Signed in successfully")
 
     def search_project(self, target_project: str):
         expect(self.page.get_by_role("searchbox", name="Search")).to_be_visible()

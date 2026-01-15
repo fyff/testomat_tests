@@ -2,7 +2,7 @@ import pytest
 from faker import Faker
 from playwright.sync_api import expect
 
-from src.web.Application import Application
+from src.web.application import Application
 
 
 @pytest.mark.web
