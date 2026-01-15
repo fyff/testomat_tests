@@ -78,6 +78,7 @@ ignore = [
     "E501", # Line too long (formatter handles this)
     "B008", # Function calls in defaults (needed for some DI patterns)
     "PT001", # Use @pytest.fixture() without parentheses (personal preference, optional)
+    "PT003", # `scope='function'` is implied in ` @pytest.fixture()`
 ]
 fixable = ["ALL"]
 unfixable = []

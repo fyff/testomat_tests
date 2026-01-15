@@ -55,7 +55,7 @@ invalid_login_test_cases = [
 
 
 @pytest.mark.web
-@pytest.mark.parametrize("email, password", invalid_login_test_cases)
+@pytest.mark.parametrize(("email", "password"), invalid_login_test_cases)
 def test_login_invalid_creds(shared_page: Application, configs: Config, email: str, password: str, slow_down):
     if email == "config_email":
         email = configs.email

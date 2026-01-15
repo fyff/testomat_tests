@@ -244,7 +244,7 @@ dependencies = [
     { name = "python-dotenv" },
 ]
 
-[package.dev-dependencies]
+[package.optional-dependencies]
 dev = [
     { name = "ruff" },
 ]
@@ -256,10 +256,9 @@ requires-dist = [
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-html", specifier = ">=4.1.1" },
     { name = "python-dotenv", specifier = ">=1.2.1" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.14.12" },
 ]
-
-[package.metadata.requires-dev]
-dev = [{ name = "ruff", specifier = ">=0.14.12" }]
+provides-extras = ["dev"]
 
 [[package]]
 name = "typing-extensions"
