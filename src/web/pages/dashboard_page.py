@@ -59,8 +59,8 @@ class DashboardPage:
 
     def get_project(self, project_name: str) -> ProjectCard:
         card_locator = self._grid_items.filter(has=self.page.locator("h3", has_text=project_name)).first
-        return ProjectCard(self.page, card_locator)
+        return ProjectCard(card_locator)
 
     def get_all_projects(self) -> list[ProjectCard]:
         expect(self._grid_items.first).to_be_visible()
-        return [ProjectCard(self.page, item) for item in self._grid_items.all()]
+        return [ProjectCard(item) for item in self._grid_items.all()]
