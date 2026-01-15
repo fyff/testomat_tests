@@ -5,7 +5,7 @@ from playwright.sync_api import Page, expect
 from src.web.components.side_bar import SideBar
 
 
-class ProjectDeatilsPage(Page):
+class NewProjectDeatilsPage(Page):
     def __init__(self, page: Page):
         self.page = page
         self.side_bar = SideBar(page)
