@@ -9,6 +9,7 @@ dependencies = [
     "pytest-html>=4.1.1",
     "python-dotenv>=1.2.1",
     "playwright>=1.57.0",
+    "pytest-playwright>=0.7.2",
     "ruff>=0.14.12",
 ]
 
@@ -31,12 +32,16 @@ python_files = ["test_*.py", "*_test.py", "*_tests.py"]
 python_functions = ["test_*"]
 norecursedirs = [".git", ".venv", ".idea", "__pycache__", "build", "dist"]
 addopts = [
-    "-v",
-    "-ra",
-    "--strict-markers",
-    "--tb=short",
-    "--html=test-result/report.html",
-    "--self-contained-html",
+    "-v", # Verbose output - shows individual test names
+    "-ra", # Shows summary of all test outcomes except passed (r=report, a=all except passed)
+    "--strict-markers", # Raises error if using undefined markers (enforces marker registration)
+    "--tb=short", # Short traceback format for failures (less verbose than full)
+    "--tracing=retain-on-failure", # Playwright: enables trace recording for debugging
+    "--screenshot=on", # Playwright: captures screenshots(typically on failure)
+    "--video=retain-on-failure", # Playwright: captures video recordings of tests
+    "--output=test-result/traces", # Playwright: directory for trace files
+    "--html=test-result/report.html", # pytest-html plugin: generates HTML report at this path
+    "--self-contained-html", # Embeds CSS/JS in HTML report (single file, no external dependencies)
 ]
 markers = [
     "smoke: Quick smoke tests for basic functionality",
@@ -98,3 +103,8 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[dependency-groups]
+dev = [
+    "pytest-playwright>=0.7.2",
+]
