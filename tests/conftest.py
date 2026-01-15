@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import pytest
 from dotenv import load_dotenv
-from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright, ViewportSize
+from playwright.sync_api import Browser, BrowserContext, Page, ViewportSize, sync_playwright
 
 from src.web.application import Application
 
