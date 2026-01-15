@@ -9,6 +9,7 @@ dependencies = [
     "pytest-html>=4.1.1",
     "python-dotenv>=1.2.1",
     "playwright>=1.57.0",
+    "ruff>=0.14.12",
 ]
 
 [project.optional-dependencies]
