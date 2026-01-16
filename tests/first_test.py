@@ -4,7 +4,7 @@ import pytest
 from faker import Faker
 from playwright.sync_api import Page, expect
 
-from tests.conftest import Config
+from tests.fixtures.config import Config
 
 TARGET_PROJECT = "python manufacture"
 

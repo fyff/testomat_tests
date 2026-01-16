@@ -53,7 +53,7 @@ def perform_login(page: Page, email: str, password: str) -> bool:
     app = Application(page)
     app.login_page.open()
     app.login_page.is_loaded()
-    app.login_page.login_user(email, password)
+    app.login_page.login(email, password)
     return True
 
 
