@@ -162,10 +162,10 @@ def free_project_page(browser_instance: Browser, configs: Config) -> Page:
     perform_login(page, configs.email, configs.password)
 
     app = Application(page)
-    app.projects_page.is_loaded()
-    app.projects_page.open()
-    app.projects_page.header.select_company("Free Projects")
-    expect(app.projects_page.header.free_plan_label).to_be_visible()
+    app.dashboard_page.is_loaded()
+    app.dashboard_page.open()
+    app.dashboard_page.select_company("Free Projects")
+    expect(app.dashboard_page.plan_tooltip).to_be_visible()
 
     FREE_PROJECT_STORAGE_PATH.parent.mkdir(parents=True, exist_ok=True)
     context.storage_state(path=FREE_PROJECT_STORAGE_PATH)

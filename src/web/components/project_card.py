@@ -5,29 +5,29 @@ class ProjectCard:
     def __init__(self, card: Locator):
         self.card = card
 
-        self._title = self.card.locator("h3")
-        self._link = self.card.locator("a").first
-        self._stats = self.card.locator("p.text-gray-500")
-        self._badges = self.card.locator(".project-badges .common-badge")
+        self.title = self.card.locator("h3")
+        self.link = self.card.locator("a").first
+        self.stats = self.card.locator("p.text-gray-500")
+        self.badges = self.card.locator(".project-badges .common-badge")
         # Locates only the image tags inside the user section
-        self._avatar_imgs = self.card.locator(".inline-flex img")
+        self.avatar_imgs = self.card.locator(".inline-flex img")
         # Locates the "+N members" overflow circle if it exists
-        self._avatar_overflow = self.card.locator(".inline-flex div.rounded-full")
+        self.avatar_overflow = self.card.locator(".inline-flex div.rounded-full")
 
     def open(self):
-        self._link.click()
+        self.link.click()
 
     def has_title(self, title: str):
-        expect(self._title).to_have_text(title)
+        expect(self.title).to_have_text(title)
 
     def has_test_count(self, count: str):
-        expect(self._stats).to_contain_text(count)
+        expect(self.stats).to_contain_text(count)
 
     def has_badge(self, badge_name: str):
-        expect(self._badges.filter(has_text=badge_name)).to_be_visible()
+        expect(self.badges.filter(has_text=badge_name)).to_be_visible()
 
     def is_demo_project(self):
-        demo_badge = self._badges.filter(has_text="Demo")
+        demo_badge = self.badges.filter(has_text="Demo")
         expect(demo_badge).to_be_visible()
         expect(demo_badge).to_have_class("common-badge common-badge-project-demo")
 
@@ -36,8 +36,8 @@ class ProjectCard:
         Checks the number of visible avatar images.
         Note: This does not include the '+N' number, only actual images.
         """
-        expect(self._avatar_imgs).to_have_count(count)
+        expect(self.avatar_imgs).to_have_count(count)
 
     def has_team_overflow(self):
         """Checks if the +N (e.g., +32) bubble is visible."""
-        expect(self._avatar_overflow).to_be_visible()
+        expect(self.avatar_overflow).to_be_visible()
