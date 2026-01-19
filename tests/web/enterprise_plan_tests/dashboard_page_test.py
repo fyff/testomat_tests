@@ -86,9 +86,13 @@ def test_dashboard_table_is_not_empty(logged_app: Application):
 @pytest.mark.web
 def test_open_free_project(isolated_logged_app: Application):
     dashboard = isolated_logged_app.dashboard_page
+    dashboard.is_loaded()
     dashboard.select_company("Free Projects")
 
-    expect(isolated_logged_app.page.get_by_text("You have not created any projects yet")).to_be_visible(timeout=10000)
+    expect(dashboard.empty_state_message).to_be_visible(timeout=5000)
+    expect(dashboard.create_company_link).to_be_visible()
+    expect(dashboard.no_project_image).to_be_visible()
+    expect(dashboard.docs_link).to_have_attribute("href", "https://docs.testomat.io")
 
 
 @pytest.mark.smoke

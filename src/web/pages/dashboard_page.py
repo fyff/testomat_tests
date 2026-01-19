@@ -16,13 +16,23 @@ class DashboardPage:
         self.header_title = page.locator("h2", has_text="Projects")
         self.company_dropdown = page.locator("#company_id")
         self.search_input = page.locator("#content-desktop #search")
-        self.create_button = page.locator("a.common-btn-primary", has_text="Create")
+        self.create_button = page.get_by_role("link", name="Create", exact=True)
         self.flash_message = page.locator(".common-flash-success-right")
         self.plan_tooltip = page.locator(".tooltip-project-plan")
         self.grid_view_button = page.locator("#grid-view")
         self.grid_items = page.locator("#grid li")
         self.table_view_button = page.locator("#table-view")
         self.table_rows = page.locator("#myTable tbody tr")
+        self.create_company_link = page.get_by_role("link", name="Create Company to Upgrade")
+        self.empty_state_message = page.get_by_text("You have not created any projects yet")
+        self.empty_state_create_project_button = page.get_by_role("link", name="Create project")
+        self.docs_link = page.get_by_role("link", name="Read docs →")
+        self.chat_button = page.locator("#crisp-chatbox").get_by_role("button")
+        self.chat_opened_indicator = page.locator("#crisp-chatbox [data-id='chat_opened']")
+        self.jest_tutorial_title = page.get_by_role("heading", name="🚀 Learn How To Start with Jest Tests")
+        self.cucumber_tutorial_title = page.get_by_role("heading", name="🤓 Get Started with Cucumber BDD Tests")
+        self.cypress_tutorial_title = page.get_by_role("heading", name="🌲 Integrate Cypress.io Tests")
+        self.no_project_image = page.locator('img[src="/images/projects/no-project.svg"]')
 
     def open(self, url: str = "/projects") -> Self:
         self.page.goto(url)
@@ -31,14 +41,29 @@ class DashboardPage:
     def is_loaded(self):
         self.auth_header.is_loaded()
         expect(self.header_title).to_be_visible()
-        expect(self.flash_message).to_have_text("Signed in successfully")
+        expect(self.company_dropdown).to_be_visible()
+        expect(self.create_button).to_be_visible()
+        expect(self.grid_view_button).to_be_visible()
+        expect(self.table_view_button).to_be_visible()
+        expect(self.chat_button).to_be_visible()
+
+    def verify_educational_videos(self):
+        expect(self.jest_tutorial_title).to_be_visible()
+        expect(self.cucumber_tutorial_title).to_be_visible()
+        expect(self.cypress_tutorial_title).to_be_visible()
+
+    def click_create_company(self):
+        self.create_company_link.click()
+
+    def click_read_docs(self):
+        self.docs_link.click()
+
+    def select_company(self, company_label: str):
+        self.company_dropdown.select_option(label=company_label)
 
     def search_project(self, target_project: str):
         expect(self.page.get_by_role("searchbox", name="Search")).to_be_visible()
         self.page.locator("#content-desktop #search").fill(target_project)
-
-    def select_company(self, company_label: str):
-        self.company_dropdown.select_option(label=company_label)
 
     def create_project(self):
         self.create_button.click()

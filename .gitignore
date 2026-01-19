@@ -8,6 +8,7 @@ venv/
 
 # macOS system files
 .DS_Store
+.gemini/*
 
 # PyCharm / IntelliJ IDE settings
 .idea/
