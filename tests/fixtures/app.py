@@ -38,7 +38,7 @@ def build_browser_context(
     kwargs = {
         "base_url": base_url,
         "viewport": {"width": 1366, "height": 768},
-        "locale": "uk-UA",
+        "locale": "en-GB",
         "timezone_id": "Europe/Kyiv",
         "record_video_dir": "test-result/videos/",
         "permissions": ["geolocation"],

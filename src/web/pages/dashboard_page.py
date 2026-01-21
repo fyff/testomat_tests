@@ -3,6 +3,7 @@ from typing import Self
 from playwright.sync_api import Locator, Page, expect
 
 from src.web.components.auth_header import AuthHeader
+from src.web.components.crisp_chat import CrispChat
 from src.web.components.project_card import ProjectCard
 from src.web.components.side_bar import SideBar
 from src.web.pages.new_project_page import NewProjectPage
@@ -13,6 +14,7 @@ class DashboardPage:
         self.page = page
         self.side_bar = SideBar(page)
         self.auth_header = AuthHeader(page)
+        self.crisp_chat = CrispChat(page)
 
         self.header_title = page.locator("h2", has_text="Projects")
         self.company_dropdown = page.locator("#company_id")
@@ -28,8 +30,6 @@ class DashboardPage:
         self.empty_state_message = page.get_by_text("You have not created any projects yet")
         self.empty_state_create_project_button = page.get_by_role("link", name="Create project")
         self.docs_link = page.get_by_role("link", name="Read docs →")
-        self.chat_button = page.locator("#crisp-chatbox").get_by_role("button")
-        self.chat_opened_indicator = page.locator("#crisp-chatbox [data-id='chat_opened']")
         self.jest_tutorial_title = page.get_by_role("heading", name="🚀 Learn How To Start with Jest Tests")
         self.cucumber_tutorial_title = page.get_by_role("heading", name="🤓 Get Started with Cucumber BDD Tests")
         self.cypress_tutorial_title = page.get_by_role("heading", name="🌲 Integrate Cypress.io Tests")
@@ -46,7 +46,7 @@ class DashboardPage:
         expect(self.create_button).to_be_visible()
         expect(self.grid_view_button).to_be_visible()
         expect(self.table_view_button).to_be_visible()
-        expect(self.chat_button).to_be_visible()
+        self.crisp_chat.wait_for_loaded()
         return self
 
     def verify_educational_videos(self):

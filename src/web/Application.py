@@ -1,5 +1,6 @@
 from playwright.sync_api import Page
 
+from src.web.components.crisp_chat import CrispChat
 from src.web.pages.dashboard_page import DashboardPage
 from src.web.pages.landing_page import LandingPage
 from src.web.pages.login_page import LoginPage
@@ -15,3 +16,4 @@ class Application:
         self.dashboard_page = DashboardPage(page)
         self.new_project_page = NewProjectPage(page)
         self.new_project_details_page = NewProjectDetailsPage(page)
+        self.crisp_chat = CrispChat(page)
