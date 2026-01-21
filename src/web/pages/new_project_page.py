@@ -15,9 +15,9 @@ class NewProjectPage:
 
     def open(self) -> Self:
         self.page.goto("/projects/new")
-        return self
+        return self.wait_for_loaded()
 
-    def is_loaded(self) -> Self:
+    def wait_for_loaded(self) -> Self:
         expect(self.__form_container).to_be_visible()
         expect(self.__form_container.locator("#classical")).to_be_visible()
         expect(self.__form_container.locator("#classical")).to_contain_text("Classical")

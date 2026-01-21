@@ -5,6 +5,7 @@ from playwright.sync_api import Locator, Page, expect
 from src.web.components.auth_header import AuthHeader
 from src.web.components.project_card import ProjectCard
 from src.web.components.side_bar import SideBar
+from src.web.pages.new_project_page import NewProjectPage
 
 
 class DashboardPage:
@@ -36,16 +37,17 @@ class DashboardPage:
 
     def open(self, url: str = "/projects") -> Self:
         self.page.goto(url)
-        return self
+        return self.wait_for_loaded()
 
-    def is_loaded(self):
-        self.auth_header.is_loaded()
+    def wait_for_loaded(self) -> Self:
+        self.auth_header.wait_for_loaded()
         expect(self.header_title).to_be_visible()
         expect(self.company_dropdown).to_be_visible()
         expect(self.create_button).to_be_visible()
         expect(self.grid_view_button).to_be_visible()
         expect(self.table_view_button).to_be_visible()
         expect(self.chat_button).to_be_visible()
+        return self
 
     def verify_educational_videos(self):
         expect(self.jest_tutorial_title).to_be_visible()
@@ -61,24 +63,28 @@ class DashboardPage:
     def select_company(self, company_label: str):
         self.company_dropdown.select_option(label=company_label)
 
-    def search_project(self, target_project: str):
+    def search_project(self, target_project: str) -> Self:
         expect(self.page.get_by_role("searchbox", name="Search")).to_be_visible()
         self.page.locator("#content-desktop #search").fill(target_project)
+        return self
 
-    def create_project(self):
+    def create_project(self) -> NewProjectPage:
         self.create_button.click()
+        return NewProjectPage(self.page).wait_for_loaded()
 
-    def switch_to_table_view(self):
+    def switch_to_table_view(self) -> Self:
         self.table_view_button.click()
         expect(self.page.locator("#myTable")).to_be_visible()
+        return self
 
     @property
     def get_table_rows_locator(self):
         return self.table_rows
 
-    def switch_to_grid_view(self):
+    def switch_to_grid_view(self) -> Self:
         self.grid_view_button.click()
         expect(self.grid_items.first).to_be_visible()
+        return self
 
     @property
     def get_project_card_locator(self):

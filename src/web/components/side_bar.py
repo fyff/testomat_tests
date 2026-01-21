@@ -1,3 +1,5 @@
+from typing import Self
+
 from playwright.sync_api import Page, expect
 
 
@@ -23,68 +25,69 @@ class SideBar:
         self.projects_link = self.container.get_by_role("link", name="Projects")
         self.user_profile_link = self.container.get_by_role("link", name="Oleksii")
 
-    def open(self) -> SideBar:
+    def open(self) -> Self:
         self.container.hover()
         self.open_button.click()
         return self
 
-    def close(self) -> SideBar:
+    def close(self) -> Self:
         self.close_button.click()
         return self
 
-    def is_loaded(self) -> SideBar:
+    def wait_for_loaded(self) -> Self:
         expect(self.container).to_be_visible()
         expect(self.tests_link).to_be_visible()
         expect(self.projects_link).to_be_visible()
         return self
 
-    def navigate_to_tests(self) -> SideBar:
+    def navigate_to_tests(self) -> Self:
         self.tests_link.click()
         return self
 
-    def navigate_to_requirements(self) -> SideBar:
+    def navigate_to_requirements(self) -> Self:
         self.requirements_link.click()
         return self
 
-    def navigate_to_runs(self) -> SideBar:
+    def navigate_to_runs(self) -> Self:
         self.runs_link.click()
         return self
 
-    def navigate_to_plans(self) -> SideBar:
+    def navigate_to_plans(self) -> Self:
         self.plans_link.click()
         return self
 
-    def navigate_to_steps(self) -> SideBar:
+    def navigate_to_steps(self) -> Self:
         self.steps_link.click()
+        return self
 
-    def navigate_to_pulse(self) -> SideBar:
+    def navigate_to_pulse(self) -> Self:
         self.pulse_link.click()
         return self
 
-    def navigate_to_imports(self) -> SideBar:
+    def navigate_to_imports(self) -> Self:
         self.imports_link.click()
         return self
 
-    def navigate_to_analytics(self) -> SideBar:
+    def navigate_to_analytics(self) -> Self:
         self.analytics_link.click()
         return self
 
-    def navigate_to_branches(self) -> SideBar:
+    def navigate_to_branches(self) -> Self:
         self.branches_link.click()
         return self
 
-    def navigate_to_settings(self) -> SideBar:
+    def navigate_to_settings(self) -> Self:
         self.settings_link.click()
         return self
 
-    def navigate_to_help(self) -> SideBar:
+    def navigate_to_help(self) -> Self:
         self.help_link.click()
         return self
 
-    def navigate_to_projects(self) -> SideBar:
+    def navigate_to_projects(self) -> Self:
         self.projects_link.click()
         return self
 
-    def navigate_to_user_profile(self) -> SideBar:
+    def navigate_to_user_profile(self) -> Self:
         self.user_profile_link.click()
         return self

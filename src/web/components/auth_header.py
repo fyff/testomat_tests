@@ -1,3 +1,5 @@
+from typing import Self
+
 from playwright.sync_api import Page, expect
 
 
@@ -30,7 +32,7 @@ class AuthHeader:
         self.trial_request_link = self.profile_menu.get_by_role("link", name="Request a Free Trial")
         self.sign_out_btn = self.profile_menu.get_by_role("button", name="Sign Out")
 
-    def is_loaded(self) -> AuthHeader:
+    def wait_for_loaded(self) -> Self:
         expect(self.container).to_be_visible()
         expect(self.logo).to_be_visible()
         expect(self.profile_avatar).to_be_visible()

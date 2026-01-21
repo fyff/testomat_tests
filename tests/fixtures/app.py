@@ -31,9 +31,9 @@ def create_free_project_state() -> None:
 
 
 def build_browser_context(
-        browser: Browser,
-        base_url: str,
-        storage_state: Path | None = None,
+    browser: Browser,
+    base_url: str,
+    storage_state: Path | None = None,
 ) -> BrowserContext:
     kwargs = {
         "base_url": base_url,
@@ -51,9 +51,7 @@ def build_browser_context(
 def perform_login(page: Page, email: str, password: str) -> bool:
     """Performs login steps on the given page."""
     app = Application(page)
-    app.login_page.open()
-    app.login_page.is_loaded()
-    app.login_page.login(email, password)
+    app.login_page.open().login(email, password)
     return True
 
 
@@ -162,7 +160,7 @@ def free_project_page(browser_instance: Browser, configs: Config) -> Page:
     perform_login(page, configs.email, configs.password)
 
     app = Application(page)
-    app.dashboard_page.is_loaded()
+    app.dashboard_page.wait_for_loaded()
     app.dashboard_page.open()
     app.dashboard_page.select_company("Free Projects")
     expect(app.dashboard_page.plan_tooltip).to_be_visible()

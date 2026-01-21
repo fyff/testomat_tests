@@ -8,7 +8,7 @@ from web.application import Application
 @pytest.mark.web
 def test_overview_projects_page_header(free_project_app: Application):
     dashboard = free_project_app.dashboard_page
-    dashboard.is_loaded()
+    dashboard.wait_for_loaded()
     expect(dashboard.company_dropdown).to_contain_text("Free Projects")
     expect(dashboard.create_company_link).to_be_visible()
 
@@ -23,7 +23,7 @@ def test_overview_projects_page_header(free_project_app: Application):
 @pytest.mark.web
 def test_overview_free_plan_dashboard_elements(free_project_app: Application):
     dashboard = free_project_app.dashboard_page
-    dashboard.is_loaded()
+    dashboard.wait_for_loaded()
     expect(dashboard.no_project_image).to_be_visible()
     expect(dashboard.empty_state_message).to_be_visible()
     expect(dashboard.empty_state_create_project_button).to_be_visible()

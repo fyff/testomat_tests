@@ -10,7 +10,7 @@ class NewProjectDetailsPage(Page):
         self.page = page
         self.side_bar = SideBar(page)
 
-    def is_loaded(self) -> Self:
+    def wait_for_loaded(self) -> Self:
         expect(self.page.locator(".sticky-header")).to_be_visible(timeout=10000)
         expect(self.page.locator(".mainnav-menu")).to_be_visible()
         expect(self.page.locator("[placeholder='First Suite']")).to_be_visible()

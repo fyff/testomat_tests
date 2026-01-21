@@ -5,7 +5,7 @@ from src.web.application import Application
 from tests.fixtures.config import Config
 
 TARGET_PROJECT_NAME = "python manufacture"
-EMPTY_PROJECT_NAME = "Industrial"
+EMPTY_PROJECT_NAME = "Electronics, Games & Industrial"
 
 
 @pytest.mark.smoke
@@ -84,9 +84,9 @@ def test_dashboard_table_is_not_empty(logged_app: Application):
 
 
 @pytest.mark.web
-def test_open_free_project(isolated_logged_app: Application):
+def test_switch_to_free_project(isolated_logged_app: Application):
     dashboard = isolated_logged_app.dashboard_page
-    dashboard.is_loaded()
+    dashboard.wait_for_loaded()
     dashboard.select_company("Free Projects")
 
     expect(dashboard.empty_state_message).to_be_visible(timeout=5000)
@@ -102,6 +102,6 @@ def test_sign_out(isolated_logged_app: Application):
     login = isolated_logged_app.login_page
     dashboard.auth_header.open_user_menu()
     dashboard.auth_header.sign_out()
-    login.is_loaded()
+    login.wait_for_loaded()
     expect(login.sign_out_message).to_be_visible()
     expect(login.sign_out_message).to_have_text("You must be logged in to access this page")
