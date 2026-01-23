@@ -7,28 +7,30 @@ from src.web.application import Application
 
 @pytest.mark.web
 def test_overview_elements(logged_app: Application):
-    new_project = logged_app.new_project_page
-    new_project.open()
-    new_project.wait_for_loaded()
+    create_project = logged_app.create_project_page
+    create_project.open()
+    create_project.wait_for_loaded()
+    logged_app.auth_header.wait_for_loaded()
+    logged_app.crisp_chat.wait_for_loaded()
 
 
 @pytest.mark.web
 def test_navigate_how_to_start(logged_app: Application):
-    new_project = logged_app.new_project_page
-    new_project.open()
+    create_project = logged_app.create_project_page
+    create_project.open()
     with logged_app.page.expect_popup() as page_info:
-        new_project.click_how_to_start()
+        create_project.click_how_to_start()
     new_page = page_info.value
     expect(new_page).to_have_url("https://docs.testomat.io/getting-started/")
     new_page.close()
-    new_project.wait_for_loaded()
+    create_project.wait_for_loaded()
 
 
 @pytest.mark.web
-def test_create_new_project(logged_app: Application):
+def test_create_create_project(logged_app: Application):
     target_project_name = Faker().company()
 
-    (logged_app.new_project_page.open().fill_project_title(target_project_name).click_create())
+    (logged_app.create_project_page.open().fill_project_title(target_project_name).click_create())
 
     (logged_app.new_project_details_page.wait_for_loaded().empty_project_name_is(target_project_name).close_readme())
 

@@ -70,8 +70,8 @@ def test_login_invalid_creds(shared_page: Application, configs: Config, email: s
 @pytest.mark.smoke
 @pytest.mark.web
 def test_login_with_valid_creds(app: Application, configs: Config):
-    home_page = app.home_page
-    home_page.open().click_login()
+    landing_page = app.landing_page
+    landing_page.open().click_login()
 
     # click_login now returns a loaded LoginPage instance
     app.login_page.wait_for_loaded()

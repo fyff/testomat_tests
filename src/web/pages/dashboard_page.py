@@ -6,7 +6,7 @@ from src.web.components.auth_header import AuthHeader
 from src.web.components.crisp_chat import CrispChat
 from src.web.components.project_card import ProjectCard
 from src.web.components.side_bar import SideBar
-from src.web.pages.new_project_page import NewProjectPage
+from src.web.pages.create_project_page import CreateProjectPage
 
 
 class DashboardPage:
@@ -46,6 +46,7 @@ class DashboardPage:
         expect(self.create_button).to_be_visible()
         expect(self.grid_view_button).to_be_visible()
         expect(self.table_view_button).to_be_visible()
+        self.auth_header.wait_for_loaded()
         self.crisp_chat.wait_for_loaded()
         return self
 
@@ -68,9 +69,9 @@ class DashboardPage:
         self.page.locator("#content-desktop #search").fill(target_project)
         return self
 
-    def create_project(self) -> NewProjectPage:
+    def create_project(self) -> CreateProjectPage:
         self.create_button.click()
-        return NewProjectPage(self.page).wait_for_loaded()
+        return CreateProjectPage(self.page).wait_for_loaded()
 
     def switch_to_table_view(self) -> Self:
         self.table_view_button.click()
