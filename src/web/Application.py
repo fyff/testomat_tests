@@ -1,13 +1,13 @@
 from playwright.sync_api import Page
 
+from src.web.components.auth_header import AuthHeader
 from src.web.components.crisp_chat import CrispChat
+from src.web.components.side_bar import SideBar
 from src.web.pages.create_project_page import CreateProjectPage
 from src.web.pages.dashboard_page import DashboardPage
 from src.web.pages.landing_page import LandingPage
 from src.web.pages.login_page import LoginPage
 from src.web.pages.new_project_details_page import NewProjectDetailsPage
-from src.web.components.auth_header import AuthHeader
-from src.web.components.side_bar import SideBar
 
 
 class Application:
