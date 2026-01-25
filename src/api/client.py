@@ -3,7 +3,7 @@ from typing import Self
 
 import httpx
 
-from src.api.models import LoginResponse, ProjectResponse
+from src.api.models import ProjectResponse
 
 
 class TestomatAuth(httpx.Auth):

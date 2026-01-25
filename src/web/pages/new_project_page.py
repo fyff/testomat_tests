@@ -3,19 +3,18 @@ from typing import Self
 from playwright.sync_api import Page, expect
 
 from src.web.components.side_bar import SideBar
+from src.web.pages.project_page import ProjectPage
 
 
-class NewProjectDetailsPage:
+class NewProjectPage:
     def __init__(self, page: Page):
         self.page = page
         self.side_bar = SideBar(page)
 
-        # Header
         self.project_title = page.locator(".sticky-header h2")
         self.readme_button = page.get_by_role("link", name="Readme")
         self.more_options_button = page.locator(".ember-basic-dropdown-trigger")
 
-        # Manual Tests Section
         self.suite_input = page.get_by_placeholder("First Suite")
         self.add_suite_button = page.get_by_role("button", name="Suite")
         self.add_folder_button = page.get_by_role("button", name="Folder")
@@ -24,14 +23,13 @@ class NewProjectDetailsPage:
         self.how_to_import_code_link = page.get_by_role("link", name="How to import tests from code")
         self.import_from_testrail_button = page.get_by_role("link", name="Import from TestRail")
         self.import_from_spreadsheet_button = page.get_by_role("link", name="Import from Spreadsheet")
-        # Notifications & Errors
+
         self.toast_notification = page.locator(".ember-notify p")
 
     def wait_for_loaded(self) -> Self:
         expect(self.project_title).to_be_visible()
         expect(self.suite_input).to_be_visible()
         expect(self.add_suite_button).to_be_visible()
-        self.side_bar.wait_for_loaded()
         return self
 
     def verify_project_name(self, expected_name: str) -> Self:
@@ -42,15 +40,15 @@ class NewProjectDetailsPage:
         self.page.locator(".back .third-btn").click()
         return self
 
-    def create_first_suite(self, suite_name: str) -> Self:
+    def create_first_suite(self, suite_name: str) -> ProjectPage:
         self.suite_input.fill(suite_name)
         self.add_suite_button.click()
-        return self
+        return ProjectPage(self.page).wait_for_loaded()
 
-    def create_first_folder(self, folder_name: str) -> Self:
+    def create_first_folder(self, folder_name: str) -> ProjectPage:
         self.suite_input.fill(folder_name)
         self.add_folder_button.click()
-        return self
+        return ProjectPage(self.page).wait_for_loaded()
 
     def click_add_suite(self) -> Self:
         self.add_suite_button.click()

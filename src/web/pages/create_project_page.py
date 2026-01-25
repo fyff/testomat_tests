@@ -2,7 +2,7 @@ from typing import Self
 
 from playwright.sync_api import Page, expect
 
-from src.web.pages.new_project_details_page import NewProjectDetailsPage
+from src.web.pages.new_project_page import NewProjectPage
 
 
 class CreateProjectPage:
@@ -38,7 +38,7 @@ class CreateProjectPage:
         self.project_title_input.fill(project_name)
         return self
 
-    def click_create(self) -> NewProjectDetailsPage:
+    def click_create(self) -> NewProjectPage:
         self.form_container.locator("#project-create-btn input").click()
         expect(self.form_container.locator("#project-create-btn input")).to_be_hidden(timeout=10_000)
-        return NewProjectDetailsPage(self.page)
+        return NewProjectPage(self.page)
