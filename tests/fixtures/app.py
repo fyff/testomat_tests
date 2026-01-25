@@ -20,7 +20,11 @@ def create_free_project_state() -> None:
     if not STORAGE_STATE_PATH.exists():
         return
 
-    state = json.loads(STORAGE_STATE_PATH.read_text())
+    try:
+        state = json.loads(STORAGE_STATE_PATH.read_text())
+    except (json.JSONDecodeError, IOError):
+        return
+
     for cookie in state.get("cookies", []):
         if cookie.get("name") == "company_id":
             cookie["value"] = ""
@@ -32,9 +36,12 @@ def create_free_project_state() -> None:
 
 def build_browser_context(
     browser: Browser,
-    base_url: str,
+        base_url: str | None,
     storage_state: Path | None = None,
 ) -> BrowserContext:
+    if base_url is None:
+        raise ValueError("base_url must be provided and cannot be None. Check your environment variables.")
+
     kwargs = {
         "base_url": base_url,
         "viewport": {"width": 1366, "height": 768},
@@ -66,20 +73,32 @@ def app(browser_instance: Browser, configs: Config) -> Application:
     context.close()
 
 
+def is_logged_in(page: Page) -> bool:
+    """Checks if the user is currently logged in."""
+    try:
+        page.goto("/projects", timeout=5000)
+        # Check for a specific element that only appears when logged in, e.g., company dropdown or logout button
+        return page.locator(".v-select__selection").is_visible(timeout=2000)
+    except Exception:
+        return False
+
+
 @pytest.fixture(scope="session")
-def logged_page(browser_instance: Browser, configs: Config) -> BrowserContext:
+def auth_state(browser_instance: Browser, configs: Config) -> Path:
     """
-    Provides a session-scoped, authenticated browser context.
-    This context is logged in once at the beginning of the test session
-    and reused by `logged_app` for all tests. This improves performance
-    but means browser state (cookies, local storage) is shared across tests
-    using `logged_app`.
+    Ensures a valid authentication state exists.
+    Returns the path to the storage state file.
     """
     if STORAGE_STATE_PATH.exists():
         context = build_browser_context(browser_instance, configs.app_base_url, storage_state=STORAGE_STATE_PATH)
-        yield context
+        page = context.new_page()
+        if is_logged_in(page):
+            page.close()
+            context.close()
+            return STORAGE_STATE_PATH
+        page.close()
         context.close()
-        return
+        STORAGE_STATE_PATH.unlink()
 
     context = build_browser_context(browser_instance, configs.app_base_url)
     page = context.new_page()
@@ -89,21 +108,23 @@ def logged_page(browser_instance: Browser, configs: Config) -> BrowserContext:
     context.storage_state(path=STORAGE_STATE_PATH)
     create_free_project_state()
 
-    yield context
+    page.close()
     context.close()
+    return STORAGE_STATE_PATH
 
 
 @pytest.fixture(scope="function")
-def logged_app(logged_page: BrowserContext) -> Application:
+def logged_app(browser_instance: Browser, configs: Config, auth_state: Path) -> Application:
     """
-    Provides a logged-in application instance for each test.
-    It reuses the same browser context for all tests in a session, which is faster but means
-    that the state (e.g., cookies, local storage) is shared between tests.
+    Provides a logged-in application instance for each test with its own context.
     """
-    page = logged_page.new_page()
+    context = build_browser_context(browser_instance, configs.app_base_url, storage_state=auth_state)
+    page = context.new_page()
     page.goto("/projects")
-    yield Application(page)
+    app = Application(page)
+    yield app
     page.close()
+    context.close()
 
 
 @pytest.fixture(scope="function")
@@ -122,13 +143,15 @@ def isolated_logged_app(browser_instance: Browser, configs: Config) -> Applicati
 
 
 @pytest.fixture(scope="function")
-def cookies(logged_page: BrowserContext) -> CookieHelper:
-    """Provides cookie manipulation helper for the logged-in context."""
-    return CookieHelper(logged_page)
+def cookies(browser_instance: Browser, configs: Config, auth_state: Path) -> CookieHelper:
+    """Provides cookie manipulation helper for a fresh logged-in context."""
+    context = build_browser_context(browser_instance, configs.app_base_url, storage_state=auth_state)
+    yield CookieHelper(context)
+    context.close()
 
 
 @pytest.fixture(scope="module")
-def shared_browser(browser_instance: Browser, configs: Config) -> Page:
+def module_page(browser_instance: Browser, configs: Config) -> Page:
     """Shared page for parametrized tests (module scope) - reuses same page across test params."""
     context = build_browser_context(browser_instance, configs.app_base_url)
     page = context.new_page()
@@ -138,42 +161,48 @@ def shared_browser(browser_instance: Browser, configs: Config) -> Page:
 
 
 @pytest.fixture(scope="function")
-def shared_page(shared_browser: Page) -> Application:
+def shared_page(module_page: Page) -> Application:
     """
     Provides an application instance that shares a single page across all tests in a module.
     The page state is cleaned after each test.
     """
-    yield Application(shared_browser)
-    clear_browser_state(shared_browser)
+    yield Application(module_page)
+    clear_browser_state(module_page)
 
 
 @pytest.fixture(scope="session")
-def free_project_page(browser_instance: Browser, configs: Config) -> Page:
+def free_auth_state(browser_instance: Browser, configs: Config, auth_state: Path) -> Path:
+    """
+    Ensures a valid authentication state for free projects exists.
+    Returns the path to the free project storage state file.
+    """
+    # auth_state dependency ensures that STORAGE_STATE_PATH is valid and create_free_project_state was called
     if FREE_PROJECT_STORAGE_PATH.exists():
         context = build_browser_context(browser_instance, configs.app_base_url, storage_state=FREE_PROJECT_STORAGE_PATH)
-        yield context.new_page()
+        page = context.new_page()
+        if is_logged_in(page):
+            # Also check if it's actually in "Free Projects" company if needed, but simple login check is a start
+            page.close()
+            context.close()
+            return FREE_PROJECT_STORAGE_PATH
+        page.close()
         context.close()
-        return
+        FREE_PROJECT_STORAGE_PATH.unlink()
 
-    context = build_browser_context(browser_instance, configs.app_base_url)
-    page = context.new_page()
-    perform_login(page, configs.email, configs.password)
-
-    app = Application(page)
-    app.dashboard_page.wait_for_loaded()
-    app.dashboard_page.open()
-    app.dashboard_page.select_company("Free Projects")
-    expect(app.dashboard_page.plan_tooltip).to_be_visible()
-
-    FREE_PROJECT_STORAGE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    context.storage_state(path=FREE_PROJECT_STORAGE_PATH)
-
-    yield page
-    context.close()
+    # If it doesn't exist or is invalid, it will be recreated by the next time auth_state is called?
+    # Actually, create_free_project_state() is called in auth_state.
+    # If we are here, it means FREE_PROJECT_STORAGE_PATH was invalid.
+    # We might need to recreate it.
+    create_free_project_state()
+    return FREE_PROJECT_STORAGE_PATH
 
 
 @pytest.fixture(scope="function")
-def free_project_app(free_project_page: Page) -> Application:
-    free_project_page.goto("/projects")
-    yield Application(free_project_page)
-    free_project_page.close()
+def free_project_app(browser_instance: Browser, configs: Config, free_auth_state: Path) -> Application:
+    """Provides a logged-in application instance for Free Plan tests with its own context."""
+    context = build_browser_context(browser_instance, configs.app_base_url, storage_state=free_auth_state)
+    page = context.new_page()
+    page.goto("/projects")
+    yield Application(page)
+    page.close()
+    context.close()

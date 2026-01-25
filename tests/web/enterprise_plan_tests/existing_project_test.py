@@ -5,7 +5,7 @@ from src.api.client import ApiClient
 from src.web.application import Application
 
 
-@pytest.mark.web
+@pytest.mark.smoke
 def test_create_suite_in_existing_project(api_client: ApiClient, logged_app: Application):
     projects = api_client.get_projects()
     target_project_id = projects.data[0].id
@@ -24,6 +24,7 @@ def test_create_suite_in_existing_project(api_client: ApiClient, logged_app: App
     logged_app.project_page.verify_suite_present(suite_name)
 
 
+@pytest.mark.smoke
 def test_create_folder_in_existing_project(api_client: ApiClient, logged_app: Application):
     projects = api_client.get_projects()
     target_project_id = projects.data[0].id

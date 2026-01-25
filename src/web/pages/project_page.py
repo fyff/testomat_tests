@@ -111,7 +111,7 @@ class TestOptionsDropdown:
 
     def wait_for_loaded(self) -> Self:
         expect(self.container).to_be_visible()
-        # expect(self.folder_button).to_be_visible()
+        expect(self.folder_button).to_be_visible()
         return self
 
     def select_folder(self) -> CreateSuiteModal:

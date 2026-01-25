@@ -83,6 +83,7 @@ def test_dashboard_table_is_not_empty(logged_app: Application):
     expect(dashboard.get_table_rows_locator).not_to_have_count(0)
 
 
+@pytest.mark.smoke
 @pytest.mark.web
 def test_switch_to_free_project(isolated_logged_app: Application):
     dashboard = isolated_logged_app.dashboard_page
