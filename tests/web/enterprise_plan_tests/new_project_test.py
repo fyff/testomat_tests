@@ -38,7 +38,7 @@ def test_create_create_project(logged_app: Application):
     (logged_app.new_project_details_page.side_bar.open().wait_for_loaded())
 
 
-@pytest.mark.skip
+@pytest.mark.smoke
 @pytest.mark.web
 def test_create_suite_in_new_project(logged_app: Application):
     project_name = Faker().company()

@@ -102,3 +102,6 @@ class DashboardPage:
     def get_all_projects(self) -> list[ProjectCard]:
         expect(self.grid_items.first).to_be_visible()
         return [ProjectCard(item) for item in self.grid_items.all()]
+
+    def verify_project_absent(self, project_name: str):
+        expect(self.grid_items.filter(has=self.page.locator("h3", has_text=project_name))).not_to_be_visible()

@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 import pytest
-from playwright.sync_api import Browser, BrowserContext, Page, expect
+from playwright.sync_api import Browser, BrowserContext, Page
 
 from src.web.application import Application
 from tests.fixtures.config import Config
@@ -22,7 +22,7 @@ def create_free_project_state() -> None:
 
     try:
         state = json.loads(STORAGE_STATE_PATH.read_text())
-    except (json.JSONDecodeError, IOError):
+    except (OSError, json.JSONDecodeError):
         return
 
     for cookie in state.get("cookies", []):

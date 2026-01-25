@@ -9,6 +9,7 @@ from src.web.pages.landing_page import LandingPage
 from src.web.pages.login_page import LoginPage
 from src.web.pages.new_project_page import NewProjectPage
 from src.web.pages.project_page import ProjectPage
+from src.web.pages.project_settings_page import ProjectSettingsPage
 
 
 class Application:
@@ -20,6 +21,7 @@ class Application:
         self.create_project_page = CreateProjectPage(page)
         self.new_project_details_page = NewProjectPage(page)
         self.project_page = ProjectPage(page)
+        self.project_settings_page = ProjectSettingsPage(page)
 
         # global components
         self.crisp_chat = CrispChat(page)

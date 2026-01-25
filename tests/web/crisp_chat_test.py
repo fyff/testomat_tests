@@ -27,6 +27,5 @@ def test_crisp_chat_overview(logged_app: Application, configs: Config):
     # chat.switch_to_search()
     # chat.close_search_form()
     expect(chat.message_input).to_be_visible()
-    logged_app.page.pause()
     chat.close()
     expect(chat.chat_window).not_to_be_visible()

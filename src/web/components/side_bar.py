@@ -1,6 +1,12 @@
-from typing import Self
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Self
 
 from playwright.sync_api import Page, expect
+
+if TYPE_CHECKING:
+    from src.web.pages.dashboard_page import DashboardPage
+    from src.web.pages.project_settings_page import ProjectSettingsPage
 
 
 class SideBar:
@@ -76,17 +82,21 @@ class SideBar:
         self.branches_link.click()
         return self
 
-    def navigate_to_settings(self) -> Self:
+    def navigate_to_settings(self) -> ProjectSettingsPage:
+        from src.web.pages.project_settings_page import ProjectSettingsPage
+
         self.settings_link.click()
-        return self
+        return ProjectSettingsPage(self.page).wait_for_loaded()
 
     def navigate_to_help(self) -> Self:
         self.help_link.click()
         return self
 
-    def navigate_to_projects(self) -> Self:
-        self.projects_link.click()
-        return self
+    def navigate_to_projects(self) -> DashboardPage:
+        from src.web.pages.dashboard_page import DashboardPage
+
+        self.page.goto("/projects")
+        return DashboardPage(self.page).wait_for_loaded()
 
     def navigate_to_user_profile(self) -> Self:
         self.user_profile_link.click()

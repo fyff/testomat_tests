@@ -47,3 +47,7 @@ class ApiClient:
         response = self.client.get(url)
         response.raise_for_status()
         return ProjectResponse.from_dict(response.json())
+
+    def get_project(self, project_id: str) -> httpx.Response:
+        url = f"/api/projects/{project_id}"
+        return self.client.get(url)
