@@ -43,6 +43,7 @@ def test_create_folder_in_existing_project(api_client: ApiClient, logged_app: Ap
     logged_app.project_page.verify_suite_present(folder_name)
 
 
+@pytest.mark.order(2)
 @pytest.mark.smoke
 @pytest.mark.web
 def test_delete_project(api_client: ApiClient, logged_app: Application):
