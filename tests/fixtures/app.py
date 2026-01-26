@@ -1,4 +1,5 @@
 import json
+import time
 from pathlib import Path
 
 import pytest
@@ -13,6 +14,7 @@ from tests.fixtures.cookie_helper import (
 
 STORAGE_STATE_PATH = Path("test-result/.auth/storage_state.json")
 FREE_PROJECT_STORAGE_PATH = Path("test-result/.auth/free_project_state.json")
+SESSION_TTL = 86400  # 1 day in seconds
 
 
 def create_free_project_state() -> None:
@@ -88,28 +90,27 @@ def auth_state(browser_instance: Browser, configs: Config) -> Path:
     """
     Ensures a valid authentication state exists.
     Returns the path to the storage state file.
+    Uses time-based validation (TTL) to avoid unnecessary browser launches.
     """
     if STORAGE_STATE_PATH.exists():
-        context = build_browser_context(browser_instance, configs.app_base_url, storage_state=STORAGE_STATE_PATH)
-        page = context.new_page()
-        if is_logged_in(page):
-            page.close()
-            context.close()
+        file_age = time.time() - STORAGE_STATE_PATH.stat().st_mtime
+        if file_age < SESSION_TTL:
             return STORAGE_STATE_PATH
-        page.close()
-        context.close()
+
         STORAGE_STATE_PATH.unlink()
 
     context = build_browser_context(browser_instance, configs.app_base_url)
     page = context.new_page()
-    perform_login(page, configs.email, configs.password)
 
-    STORAGE_STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    context.storage_state(path=STORAGE_STATE_PATH)
-    create_free_project_state()
+    try:
+        perform_login(page, configs.email, configs.password)
+        STORAGE_STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        context.storage_state(path=STORAGE_STATE_PATH)
+        create_free_project_state()
+    finally:
+        page.close()
+        context.close()
 
-    page.close()
-    context.close()
     return STORAGE_STATE_PATH
 
 
@@ -171,28 +172,11 @@ def shared_page(module_page: Page) -> Application:
 
 
 @pytest.fixture(scope="session")
-def free_auth_state(browser_instance: Browser, configs: Config, auth_state: Path) -> Path:
+def free_auth_state(configs: Config, auth_state: Path) -> Path:
     """
     Ensures a valid authentication state for free projects exists.
-    Returns the path to the free project storage state file.
+    We do NOT open the browser for verification because auth_state already guaranteed the session validity.
     """
-    # auth_state dependency ensures that STORAGE_STATE_PATH is valid and create_free_project_state was called
-    if FREE_PROJECT_STORAGE_PATH.exists():
-        context = build_browser_context(browser_instance, configs.app_base_url, storage_state=FREE_PROJECT_STORAGE_PATH)
-        page = context.new_page()
-        if is_logged_in(page):
-            # Also check if it's actually in "Free Projects" company if needed, but simple login check is a start
-            page.close()
-            context.close()
-            return FREE_PROJECT_STORAGE_PATH
-        page.close()
-        context.close()
-        FREE_PROJECT_STORAGE_PATH.unlink()
-
-    # If it doesn't exist or is invalid, it will be recreated by the next time auth_state is called?
-    # Actually, create_free_project_state() is called in auth_state.
-    # If we are here, it means FREE_PROJECT_STORAGE_PATH was invalid.
-    # We might need to recreate it.
     create_free_project_state()
     return FREE_PROJECT_STORAGE_PATH
 
