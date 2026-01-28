@@ -2,7 +2,7 @@ from typing import Self
 
 from playwright.sync_api import Page, expect
 
-from src.web.pages.login_page import LoginPage
+from .login_page import LoginPage
 
 
 class LandingPage:

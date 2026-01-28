@@ -1,7 +1,7 @@
 import pytest
 from faker import Faker
 
-from src.web.application import Application
+from src.web import Application
 
 
 @pytest.mark.skip

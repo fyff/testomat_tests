@@ -2,8 +2,8 @@ from typing import Self
 
 from playwright.sync_api import Page, expect
 
-from src.web.components.side_bar import SideBar
-from src.web.pages.project_page import ProjectPage
+from ..components import SideBar
+from .project_page import ProjectPage
 
 
 class NewProjectPage:

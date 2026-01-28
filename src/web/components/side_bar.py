@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING, Self
 from playwright.sync_api import Page, expect
 
 if TYPE_CHECKING:
-    from src.web.pages.dashboard_page import DashboardPage
-    from src.web.pages.project_settings_page import ProjectSettingsPage
+    from ..pages import DashboardPage, ProjectSettingsPage
 
 
 class SideBar:
@@ -83,7 +82,7 @@ class SideBar:
         return self
 
     def navigate_to_settings(self) -> ProjectSettingsPage:
-        from src.web.pages.project_settings_page import ProjectSettingsPage
+        from ..pages import ProjectSettingsPage
 
         self.settings_link.click()
         return ProjectSettingsPage(self.page).wait_for_loaded()
@@ -93,7 +92,7 @@ class SideBar:
         return self
 
     def navigate_to_projects(self) -> DashboardPage:
-        from src.web.pages.dashboard_page import DashboardPage
+        from ..pages import DashboardPage
 
         self.page.goto("/projects")
         return DashboardPage(self.page).wait_for_loaded()

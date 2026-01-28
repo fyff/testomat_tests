@@ -2,11 +2,8 @@ from typing import Self
 
 from playwright.sync_api import Locator, Page, expect
 
-from src.web.components.auth_header import AuthHeader
-from src.web.components.crisp_chat import CrispChat
-from src.web.components.project_card import ProjectCard
-from src.web.components.side_bar import SideBar
-from src.web.pages.create_project_page import CreateProjectPage
+from ..components import AuthHeader, CrispChat, ProjectCard, SideBar
+from .create_project_page import CreateProjectPage
 
 
 class DashboardPage:

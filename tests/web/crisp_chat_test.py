@@ -1,7 +1,7 @@
 import pytest
 from playwright.sync_api import expect
 
-from src.web.application import Application
+from src.web import Application
 from tests.fixtures.config import Config
 
 

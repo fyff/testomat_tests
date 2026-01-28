@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from src.web.selenium.pages import LoginPage, LoginPageV2
+from src.web.selenium import LoginPage, LoginPageV2
 from tests.fixtures.config import Config
 
 

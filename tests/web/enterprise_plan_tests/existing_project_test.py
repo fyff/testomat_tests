@@ -1,8 +1,8 @@
 import pytest
 from faker import Faker
 
-from src.api.client import ApiClient
-from src.web.application import Application
+from src.api import ApiClient
+from src.web import Application
 
 
 @pytest.mark.smoke

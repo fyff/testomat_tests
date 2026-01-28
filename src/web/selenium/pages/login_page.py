@@ -3,7 +3,7 @@ from typing import Self
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from src.web.selenium.core.base_page import BasePage
+from src.web.selenium.core import BasePage
 
 
 class LoginPage(BasePage):

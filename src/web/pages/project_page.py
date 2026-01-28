@@ -2,7 +2,7 @@ from typing import Self
 
 from playwright.sync_api import Page, expect
 
-from src.web.components.side_bar import SideBar
+from ..components import SideBar
 
 
 class SelectSuiteModal:

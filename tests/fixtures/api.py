@@ -2,7 +2,7 @@ from collections.abc import Generator
 
 import pytest
 
-from src.api.client import ApiClient
+from src.api import ApiClient
 from tests.fixtures.config import Config
 
 

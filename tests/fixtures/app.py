@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from playwright.sync_api import Browser, BrowserContext, Page
 
-from src.web.application import Application
+from src.web import Application
 from tests.fixtures.config import Config
 from tests.fixtures.cookie_helper import (
     CookieHelper,

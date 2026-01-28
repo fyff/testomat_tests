@@ -1,4 +1,4 @@
-from src.api.client import ApiClient
+from src.api import ApiClient
 
 
 def test_login_and_get_projects(api_client: ApiClient):
