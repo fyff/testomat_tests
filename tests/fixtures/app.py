@@ -38,7 +38,7 @@ def create_free_project_state() -> None:
 
 def build_browser_context(
     browser: Browser,
-        base_url: str | None,
+    base_url: str | None,
     storage_state: Path | None = None,
 ) -> BrowserContext:
     if base_url is None:
@@ -46,7 +46,7 @@ def build_browser_context(
 
     kwargs = {
         "base_url": base_url,
-        "viewport": {"width": 1366, "height": 768},
+        "viewport": {"width": 1680, "height": 1050},
         "locale": "en-GB",
         "timezone_id": "Europe/Kyiv",
         "record_video_dir": "test-result/videos/",
