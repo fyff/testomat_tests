@@ -1,4 +1,6 @@
+import contextlib
 import json
+import os
 import time
 from pathlib import Path
 
@@ -40,6 +42,7 @@ def build_browser_context(
     browser: Browser,
     base_url: str | None,
     storage_state: Path | None = None,
+    record_video: bool = True,
 ) -> BrowserContext:
     if base_url is None:
         raise ValueError("base_url must be provided and cannot be None. Check your environment variables.")
@@ -49,9 +52,11 @@ def build_browser_context(
         "viewport": {"width": 1680, "height": 900},
         "locale": "en-GB",
         "timezone_id": "Europe/Kyiv",
-        "record_video_dir": "test-result/videos/",
         "permissions": ["geolocation"],
     }
+    if record_video:
+        kwargs["record_video_dir"] = "test-result/videos/"
+
     if storage_state and storage_state.exists():
         kwargs["storage_state"] = str(storage_state)
     return browser.new_context(**kwargs)
@@ -64,42 +69,53 @@ def perform_login(page: Page, email: str, password: str) -> bool:
     return True
 
 
+def finalize_video_artifact(video_path: str, request: pytest.FixtureRequest) -> None:
+    """Deletes video if test passed, otherwise logs its path."""
+    if not video_path or not os.path.exists(video_path):
+        return
+
+    # Check if ANY phase (setup or call) failed
+    setup_failed = getattr(request.node, "rep_setup", None) and request.node.rep_setup.failed
+    call_failed = getattr(request.node, "rep_call", None) and request.node.rep_call.failed
+    failed = setup_failed or call_failed
+
+    if not failed:
+        with contextlib.suppress(OSError):
+            os.remove(video_path)
+    else:
+        print(f"\nTest failed. Video recorded at: {video_path}")
+
+
 @pytest.fixture(scope="function")
-def app(browser_instance: Browser, configs: Config) -> Application:
-    """Provides a clean, unauthenticated application instance for each test.
-    A new browser context and page are created for each test."""
+def app(browser_instance: Browser, configs: Config, request: pytest.FixtureRequest) -> Application:
+    """Provides a clean, unauthenticated application instance for each test."""
     context = build_browser_context(browser_instance, configs.app_base_url)
     page = context.new_page()
+
     yield Application(page)
+
+    video_path = ""
+    with contextlib.suppress(Exception):
+        if page.video:
+            video_path = page.video.path()
+
     page.close()
     context.close()
 
-
-def is_logged_in(page: Page) -> bool:
-    """Checks if the user is currently logged in."""
-    try:
-        page.goto("/projects", timeout=5000)
-        # Check for a specific element that only appears when logged in, e.g., company dropdown or logout button
-        return page.locator(".v-select__selection").is_visible(timeout=2000)
-    except Exception:
-        return False
+    if video_path:
+        finalize_video_artifact(video_path, request)
 
 
 @pytest.fixture(scope="session")
 def auth_state(browser_instance: Browser, configs: Config) -> Path:
-    """
-    Ensures a valid authentication state exists.
-    Returns the path to the storage state file.
-    Uses time-based validation (TTL) to avoid unnecessary browser launches.
-    """
+    """Ensures a valid authentication state exists without recording video."""
     if STORAGE_STATE_PATH.exists():
         file_age = time.time() - STORAGE_STATE_PATH.stat().st_mtime
         if file_age < SESSION_TTL:
             return STORAGE_STATE_PATH
-
         STORAGE_STATE_PATH.unlink()
 
-    context = build_browser_context(browser_instance, configs.app_base_url)
+    context = build_browser_context(browser_instance, configs.app_base_url, record_video=False)
     page = context.new_page()
 
     try:
@@ -115,38 +131,78 @@ def auth_state(browser_instance: Browser, configs: Config) -> Path:
 
 
 @pytest.fixture(scope="function")
-def logged_app(browser_instance: Browser, configs: Config, auth_state: Path) -> Application:
-    """
-    Provides a logged-in application instance for each test with its own context.
-    """
+def logged_app(
+    browser_instance: Browser, configs: Config, auth_state: Path, request: pytest.FixtureRequest
+) -> Application:
+    """Provides a logged-in application instance for each test with its own context."""
     context = build_browser_context(browser_instance, configs.app_base_url, storage_state=auth_state)
     page = context.new_page()
     page.goto("/projects")
-    app = Application(page)
-    yield app
+
+    yield Application(page)
+
+    video_path = ""
+    with contextlib.suppress(Exception):
+        if page.video:
+            video_path = page.video.path()
+
     page.close()
     context.close()
+
+    if video_path:
+        finalize_video_artifact(video_path, request)
 
 
 @pytest.fixture(scope="function")
-def isolated_logged_app(browser_instance: Browser, configs: Config) -> Application:
-    """
-    Provides a logged-in application instance with a clean state for each test.
-    It creates a new browser context and logs in for each test, ensuring no shared state.
-    This is slower than `logged_app` but safer for tests that need isolation.
-    """
+def isolated_logged_app(browser_instance: Browser, configs: Config, request: pytest.FixtureRequest) -> Application:
+    """Provides a logged-in application instance with a clean state for each test."""
     context = build_browser_context(browser_instance, configs.app_base_url)
     page = context.new_page()
     perform_login(page, configs.email, configs.password)
+
     yield Application(page)
+
+    video_path = ""
+    with contextlib.suppress(Exception):
+        if page.video:
+            video_path = page.video.path()
+
     page.close()
     context.close()
+
+    if video_path:
+        finalize_video_artifact(video_path, request)
+
+
+@pytest.fixture(scope="function")
+def free_project_app(
+    browser_instance: Browser, configs: Config, free_auth_state: Path, request: pytest.FixtureRequest
+) -> Application:
+    """Provides a logged-in application instance for Free Plan tests with its own context."""
+    context = build_browser_context(browser_instance, configs.app_base_url, storage_state=free_auth_state)
+    page = context.new_page()
+    page.goto("/projects")
+
+    yield Application(page)
+
+    video_path = ""
+    with contextlib.suppress(Exception):
+        if page.video:
+            video_path = page.video.path()
+
+    page.close()
+    context.close()
+
+    if video_path:
+        finalize_video_artifact(video_path, request)
 
 
 @pytest.fixture(scope="function")
 def cookies(browser_instance: Browser, configs: Config, auth_state: Path) -> CookieHelper:
     """Provides cookie manipulation helper for a fresh logged-in context."""
-    context = build_browser_context(browser_instance, configs.app_base_url, storage_state=auth_state)
+    context = build_browser_context(
+        browser_instance, configs.app_base_url, storage_state=auth_state, record_video=False
+    )
     yield CookieHelper(context)
     context.close()
 
@@ -154,7 +210,7 @@ def cookies(browser_instance: Browser, configs: Config, auth_state: Path) -> Coo
 @pytest.fixture(scope="module")
 def module_page(browser_instance: Browser, configs: Config) -> Page:
     """Shared page for parametrized tests (module scope) - reuses same page across test params."""
-    context = build_browser_context(browser_instance, configs.app_base_url)
+    context = build_browser_context(browser_instance, configs.app_base_url, record_video=False)
     page = context.new_page()
     yield page
     page.close()
@@ -163,30 +219,13 @@ def module_page(browser_instance: Browser, configs: Config) -> Page:
 
 @pytest.fixture(scope="function")
 def shared_page(module_page: Page) -> Application:
-    """
-    Provides an application instance that shares a single page across all tests in a module.
-    The page state is cleaned after each test.
-    """
+    """Provides an application instance that shares a single page across all tests in a module."""
     yield Application(module_page)
     clear_browser_state(module_page)
 
 
 @pytest.fixture(scope="session")
 def free_auth_state(configs: Config, auth_state: Path) -> Path:
-    """
-    Ensures a valid authentication state for free projects exists.
-    We do NOT open the browser for verification because auth_state already guaranteed the session validity.
-    """
+    """Ensures a valid authentication state for free projects exists."""
     create_free_project_state()
     return FREE_PROJECT_STORAGE_PATH
-
-
-@pytest.fixture(scope="function")
-def free_project_app(browser_instance: Browser, configs: Config, free_auth_state: Path) -> Application:
-    """Provides a logged-in application instance for Free Plan tests with its own context."""
-    context = build_browser_context(browser_instance, configs.app_base_url, storage_state=free_auth_state)
-    page = context.new_page()
-    page.goto("/projects")
-    yield Application(page)
-    page.close()
-    context.close()
