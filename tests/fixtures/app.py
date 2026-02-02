@@ -16,7 +16,70 @@ from tests.fixtures.cookie_helper import (
 
 STORAGE_STATE_PATH = Path("test-result/.auth/storage_state.json")
 FREE_PROJECT_STORAGE_PATH = Path("test-result/.auth/free_project_state.json")
-SESSION_TTL = 86400  # 1 day in seconds
+SESSION_TTL = 86400
+
+TRACE_OPTIONS = {
+    "screenshots": True,
+    "snapshots": True,
+    "sources": True,
+}
+
+
+def is_test_failed(request: pytest.FixtureRequest) -> bool:
+    """Check if any test phase (setup, call, or teardown) failed."""
+    setup_failed = getattr(request.node, "rep_setup", None) and request.node.rep_setup.failed
+    call_failed = getattr(request.node, "rep_call", None) and request.node.rep_call.failed
+    teardown_failed = getattr(request.node, "rep_teardown", None) and request.node.rep_teardown.failed
+    return bool(setup_failed or call_failed or teardown_failed)
+
+
+def finalize_video_artifact(video_path: str, request: pytest.FixtureRequest) -> None:
+    """Saves video if test failed, otherwise deletes it."""
+    if not video_path or not os.path.exists(video_path):
+        return
+
+    if not is_test_failed(request):
+        with contextlib.suppress(OSError):
+            os.remove(video_path)
+    else:
+        video_dir = Path(video_path).parent
+        new_video_path = video_dir / f"{request.node.name}.webm"
+
+        with contextlib.suppress(OSError):
+            os.rename(video_path, new_video_path)
+
+
+def finalize_trace_artifact(context: BrowserContext, request: pytest.FixtureRequest) -> None:
+    """Stops tracing and saves it if the test failed."""
+    if is_test_failed(request):
+        trace_dir = Path("test-result/traces")
+        trace_dir.mkdir(parents=True, exist_ok=True)
+        trace_path = trace_dir / f"{request.node.name}.zip"
+        with contextlib.suppress(Exception):
+            context.tracing.stop(path=str(trace_path))
+    else:
+        with contextlib.suppress(Exception):
+            context.tracing.stop()
+
+
+@contextlib.contextmanager
+def cleanup_artifacts(context: BrowserContext, page: Page, request: pytest.FixtureRequest):
+    """Context manager to handle trace and video cleanup after test execution."""
+    try:
+        yield
+    finally:
+        video_path = ""
+        with contextlib.suppress(Exception):
+            if page.video:
+                video_path = page.video.path()
+
+        finalize_trace_artifact(context, request)
+
+        page.close()
+        context.close()
+
+        if video_path:
+            finalize_video_artifact(video_path, request)
 
 
 def create_free_project_state() -> None:
@@ -69,41 +132,15 @@ def perform_login(page: Page, email: str, password: str) -> bool:
     return True
 
 
-def finalize_video_artifact(video_path: str, request: pytest.FixtureRequest) -> None:
-    """Deletes video if test passed, otherwise logs its path."""
-    if not video_path or not os.path.exists(video_path):
-        return
-
-    # Check if ANY phase (setup or call) failed
-    setup_failed = getattr(request.node, "rep_setup", None) and request.node.rep_setup.failed
-    call_failed = getattr(request.node, "rep_call", None) and request.node.rep_call.failed
-    failed = setup_failed or call_failed
-
-    if not failed:
-        with contextlib.suppress(OSError):
-            os.remove(video_path)
-    else:
-        print(f"\nTest failed. Video recorded at: {video_path}")
-
-
 @pytest.fixture(scope="function")
 def app(browser_instance: Browser, configs: Config, request: pytest.FixtureRequest) -> Application:
     """Provides a clean, unauthenticated application instance for each test."""
     context = build_browser_context(browser_instance, configs.app_base_url)
+    context.tracing.start(**TRACE_OPTIONS)
     page = context.new_page()
 
-    yield Application(page)
-
-    video_path = ""
-    with contextlib.suppress(Exception):
-        if page.video:
-            video_path = page.video.path()
-
-    page.close()
-    context.close()
-
-    if video_path:
-        finalize_video_artifact(video_path, request)
+    with cleanup_artifacts(context, page, request):
+        yield Application(page)
 
 
 @pytest.fixture(scope="session")
@@ -136,42 +173,24 @@ def logged_app(
 ) -> Application:
     """Provides a logged-in application instance for each test with its own context."""
     context = build_browser_context(browser_instance, configs.app_base_url, storage_state=auth_state)
+    context.tracing.start(**TRACE_OPTIONS)
     page = context.new_page()
     page.goto("/projects")
 
-    yield Application(page)
-
-    video_path = ""
-    with contextlib.suppress(Exception):
-        if page.video:
-            video_path = page.video.path()
-
-    page.close()
-    context.close()
-
-    if video_path:
-        finalize_video_artifact(video_path, request)
+    with cleanup_artifacts(context, page, request):
+        yield Application(page)
 
 
 @pytest.fixture(scope="function")
 def isolated_logged_app(browser_instance: Browser, configs: Config, request: pytest.FixtureRequest) -> Application:
     """Provides a logged-in application instance with a clean state for each test."""
     context = build_browser_context(browser_instance, configs.app_base_url)
+    context.tracing.start(**TRACE_OPTIONS)
     page = context.new_page()
     perform_login(page, configs.email, configs.password)
 
-    yield Application(page)
-
-    video_path = ""
-    with contextlib.suppress(Exception):
-        if page.video:
-            video_path = page.video.path()
-
-    page.close()
-    context.close()
-
-    if video_path:
-        finalize_video_artifact(video_path, request)
+    with cleanup_artifacts(context, page, request):
+        yield Application(page)
 
 
 @pytest.fixture(scope="function")
@@ -180,21 +199,12 @@ def free_project_app(
 ) -> Application:
     """Provides a logged-in application instance for Free Plan tests with its own context."""
     context = build_browser_context(browser_instance, configs.app_base_url, storage_state=free_auth_state)
+    context.tracing.start(**TRACE_OPTIONS)
     page = context.new_page()
     page.goto("/projects")
 
-    yield Application(page)
-
-    video_path = ""
-    with contextlib.suppress(Exception):
-        if page.video:
-            video_path = page.video.path()
-
-    page.close()
-    context.close()
-
-    if video_path:
-        finalize_video_artifact(video_path, request)
+    with cleanup_artifacts(context, page, request):
+        yield Application(page)
 
 
 @pytest.fixture(scope="function")
