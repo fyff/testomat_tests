@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Self
 
 
+# TODO REMOVE these dataclases after moving to MVC
 @dataclass
 class ProjectAttributes:
     title: str

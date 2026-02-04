@@ -14,11 +14,12 @@ dependencies = [
     "httpx>=0.28.1",
     "pytest-order>=1.3.0",
     "selenium>=4.40.0",
+    "pydantic>=2.12.5",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
-    "ruff>=0.14.12",
+    "datamodel-code-generator[ruff]>=0.53.0",
 ]
 
 [build-system]
@@ -107,7 +108,10 @@ indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
 
-[dependency-groups]
-dev = [
-    "pytest-playwright>=0.7.2",
-]
+[tool.datamodel-codegen]
+input = "./testomat-docs/testomat-api.yaml"
+output = "./src/api/models/models.py"
+target-python-version = "3.14"
+snake-case-field = true
+field-constraints = true
+formatters = ["ruff-format", "ruff-check"]

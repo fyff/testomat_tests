@@ -11,3 +11,11 @@ def test_login_and_get_projects(api_client: ApiClient):
         assert project.id is not None
         assert project.attributes.title is not None
         print(f"Project: {project.attributes.title} (ID: {project.id})")
+
+
+def test_create_suit(api_client: ApiClient):
+    pass
+
+
+def test_create_test(api_client: ApiClient):
+    pass
