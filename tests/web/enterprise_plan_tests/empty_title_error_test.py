@@ -4,7 +4,7 @@ from faker import Faker
 from src.web import Application
 
 
-@pytest.mark.skip
+@pytest.mark.regression
 @pytest.mark.web
 def test_error_on_empty_suite_title(logged_app: Application):
     target_project_name = Faker().company()

@@ -26,7 +26,7 @@ def test_navigate_how_to_start(logged_app: Application):
     create_project.wait_for_loaded()
 
 
-@pytest.mark.skip
+@pytest.mark.regression
 @pytest.mark.web
 def test_create_create_project(logged_app: Application):
     target_project_name = Faker().company()
@@ -41,6 +41,7 @@ def test_create_create_project(logged_app: Application):
 @pytest.mark.order(1)
 @pytest.mark.smoke
 @pytest.mark.web
+@pytest.mark.regression
 def test_create_suite_in_new_project(logged_app: Application):
     project_name = Faker().company()
     suite_name = Faker().word()

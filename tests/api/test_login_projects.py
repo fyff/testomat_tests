@@ -1,6 +1,9 @@
+import pytest
+
 from src.api import ApiClient
 
 
+@pytest.mark.api
 def test_login_and_get_projects(api_client: ApiClient):
     projects_response = api_client.get_projects()
 

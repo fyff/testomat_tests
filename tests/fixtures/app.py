@@ -117,11 +117,12 @@ def build_browser_context(
         "timezone_id": "Europe/Kyiv",
         "permissions": ["geolocation"],
     }
-    if record_video:
-        kwargs["record_video_dir"] = "test-result/videos/"
+    if os.getenv("CI", "false").lower() != "true":
+        if record_video:
+            kwargs["record_video_dir"] = "test-result/videos/"
 
-    if storage_state and storage_state.exists():
-        kwargs["storage_state"] = str(storage_state)
+        if storage_state and storage_state.exists():
+            kwargs["storage_state"] = str(storage_state)
     return browser.new_context(**kwargs)
 
 

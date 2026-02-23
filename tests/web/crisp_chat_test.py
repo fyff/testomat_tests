@@ -5,7 +5,7 @@ from src.web import Application
 from tests.fixtures.config import Config
 
 
-@pytest.mark.web
+@pytest.mark.regression
 def test_crisp_chat_overview(logged_app: Application, configs: Config):
     logged_app.dashboard_page.wait_for_loaded()
     chat = logged_app.crisp_chat.wait_for_loaded()

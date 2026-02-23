@@ -5,7 +5,7 @@ from src.api import ApiClient
 from src.web import Application
 
 
-@pytest.mark.smoke
+@pytest.mark.regression
 def test_create_suite_in_existing_project(api_client: ApiClient, logged_app: Application):
     projects = api_client.get_projects()
     target_project_id = projects.data[0].id
@@ -24,7 +24,7 @@ def test_create_suite_in_existing_project(api_client: ApiClient, logged_app: App
     logged_app.project_page.verify_suite_present(suite_name)
 
 
-@pytest.mark.smoke
+@pytest.mark.regression
 def test_create_folder_in_existing_project(api_client: ApiClient, logged_app: Application):
     projects = api_client.get_projects()
     target_project_id = projects.data[0].id
@@ -46,6 +46,7 @@ def test_create_folder_in_existing_project(api_client: ApiClient, logged_app: Ap
 @pytest.mark.order(2)
 @pytest.mark.smoke
 @pytest.mark.web
+@pytest.mark.regression
 def test_delete_project(api_client: ApiClient, logged_app: Application):
     projects = api_client.get_projects().data
     sorted_projects = sorted(projects, key=lambda x: x.attributes.created_at, reverse=True)
