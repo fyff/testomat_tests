@@ -53,13 +53,22 @@ def finalize_video_artifact(video_path: str, request: pytest.FixtureRequest) -> 
 
 
 def finalize_trace_artifact(context: BrowserContext, request: pytest.FixtureRequest) -> None:
-    """Stops tracing and saves it if the test failed."""
+    """Stops tracing and saves it if the test failed, attaching it to the Allure report."""
     if is_test_failed(request):
         trace_dir = Path("test-result/traces")
         trace_dir.mkdir(parents=True, exist_ok=True)
         trace_path = trace_dir / f"{request.node.name}.zip"
+
         with contextlib.suppress(Exception):
             context.tracing.stop(path=str(trace_path))
+
+        if trace_path.exists():
+            allure.attach.file(
+                source=str(trace_path),
+                name=f"{request.node.name}_trace",
+                attachment_type="application/vnd.allure.playwright-trace",
+                extension="zip",
+            )
     else:
         with contextlib.suppress(Exception):
             context.tracing.stop()

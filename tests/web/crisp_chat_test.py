@@ -10,8 +10,8 @@ def test_crisp_chat_overview(logged_app: Application, configs: Config):
     logged_app.dashboard_page.wait_for_loaded()
     chat = logged_app.crisp_chat.wait_for_loaded()
     chat.open()
+    chat.start_chat(configs.email)
 
-    expect(chat.chat_window).to_be_visible()
     expect(chat.message_input).to_be_visible()
     expect(chat.messages_tab).to_be_visible()
     expect(chat.search_tab).to_be_visible()

@@ -2,18 +2,22 @@
 .env
 test-result
 
+#Agents
+.gemini/*
+.claude/*
+.playwright-cli/*
+
 # Virtual Environment
 .venv/
 venv/
 
-# macOS system files
-.DS_Store
-.gemini/*
+# Python compiled files (Bytecode)
+__pycache__/
+*.pyc
 
 # PyCharm / IntelliJ IDE settings
 .idea/
 *.iml
 
-# Python compiled files (Bytecode)
-__pycache__/
-*.pyc
+# macOS system files
+.DS_Store

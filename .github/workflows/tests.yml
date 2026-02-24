@@ -1,15 +1,10 @@
 name: E2E Tests
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '0 8 * * 1-5'
+    - cron: '30 8 * * 1'
   workflow_dispatch:
     inputs:
       test_suite:
@@ -27,6 +22,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,6 +44,8 @@ jobs:
       github.event_name == 'schedule' ||
       (github.event_name == 'workflow_dispatch' &&
        (inputs.test_suite == 'smoke' || inputs.test_suite == 'all'))
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -64,7 +63,7 @@ jobs:
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
           TESTOMAT_TOKEN: ${{ secrets.TESTOMAT_TOKEN }}
-        run: uv run pytest -m smoke
+        run: uv run pytest -m smoke --tb=short --no-header
 
       - name: Upload Allure results
         if: always()
@@ -73,6 +72,7 @@ jobs:
           name: smoke-allure-results
           path: test-result/allure-results/
           retention-days: 5
+          if-no-files-found: warn
 
       - name: Upload traces
         if: failure()
@@ -81,6 +81,9 @@ jobs:
           name: smoke-traces
           path: test-result/traces/
           retention-days: 5
+          if-no-files-found: warn
+
+
 
   regression-tests:
     runs-on: ubuntu-latest
@@ -91,6 +94,8 @@ jobs:
         (github.event_name == 'workflow_dispatch' && inputs.test_suite == 'all' && needs.smoke-tests.result == 'success') ||
         (github.event_name == 'workflow_dispatch' && inputs.test_suite == 'regression')
       )
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -108,7 +113,7 @@ jobs:
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
           TESTOMAT_TOKEN: ${{ secrets.TESTOMAT_TOKEN }}
-        run: uv run pytest -m regression
+        run: uv run pytest -m regression --tb=short --no-header
 
       - name: Upload Allure results
         if: always()
@@ -117,6 +122,7 @@ jobs:
           name: regression-allure-results
           path: test-result/allure-results/
           retention-days: 5
+          if-no-files-found: warn
 
       - name: Upload traces
         if: failure()
@@ -125,15 +131,24 @@ jobs:
           name: regression-traces
           path: test-result/traces/
           retention-days: 5
+          if-no-files-found: warn
+
+
 
   publish-report:
     runs-on: ubuntu-latest
     needs: [ smoke-tests, regression-tests ]
     if: always() && (needs.smoke-tests.result != 'skipped' || needs.regression-tests.result != 'skipped')
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Download smoke Allure results
         if: needs.smoke-tests.result != 'skipped'
         uses: actions/download-artifact@v4
@@ -165,13 +180,12 @@ jobs:
       - name: Prepare Pages content
         run: |
           mkdir -p pages
-          if [ -f report/smoke/report.html ]; then
-            cp report/smoke/report.html pages/index.html
+          if [ -d pages/allure/smoke ]; then
+            cp .github/pages/index.html pages/index.html
           fi
-          if [ -f report/regression/report.html ]; then
-            cp report/regression/report.html pages/regression.html
+          if [ -d pages/allure/regression ]; then
+            cp .github/pages/index.html pages/regression.html
           fi
-          echo "https://fyff.github.io/testomat_tests_python/allure/smoke"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

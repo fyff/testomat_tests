@@ -19,6 +19,15 @@ runs:
       shell: bash
       run: uv python install 3.14
 
+    - name: Cache Playwright browsers
+      if: inputs.install-playwright == 'true'
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-chromium-${{ hashFiles('uv.lock') }}
+        restore-keys: |
+          playwright-chromium-
+
     - name: Install dependencies
       shell: bash
       run: uv sync --frozen
