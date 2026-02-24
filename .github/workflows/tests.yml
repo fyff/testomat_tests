@@ -62,7 +62,7 @@ jobs:
           BASE_APP_URL: ${{ secrets.BASE_APP_URL }}
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
-          TESTOMAT_TOKEN: ${{ secrets.TESTOMAT_TOKEN }}
+          TESTOMAT_GENERAL_TOKEN: ${{ secrets.TESTOMAT_GENERAL_TOKEN }}
         run: uv run pytest -m smoke --tb=short --no-header
 
       - name: Upload Allure results
@@ -112,7 +112,7 @@ jobs:
           BASE_APP_URL: ${{ secrets.BASE_APP_URL }}
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
-          TESTOMAT_TOKEN: ${{ secrets.TESTOMAT_TOKEN }}
+          TESTOMAT_GENERAL_TOKEN: ${{ secrets.TESTOMAT_GENERAL_TOKEN }}
         run: uv run pytest -m regression --tb=short --no-header
 
       - name: Upload Allure results
