@@ -14,6 +14,7 @@ dependencies = [
     "httpx>=0.28.1",
     "pytest-order>=1.3.0",
     "selenium>=4.40.0",
+    "allure-pytest>=2.15.3",
 ]
 
 [project.optional-dependencies]
@@ -45,12 +46,14 @@ addopts = [
     "--output=test-result/traces", # Playwright: directory for trace files
     "--html=test-result/report.html", # pytest-html plugin: generates HTML report at this path
     "--self-contained-html", # Embeds CSS/JS in HTML report (single file, no external dependencies)
+    "--alluredir=./test-result/allure-results",
 ]
 markers = [
     "smoke: Quick smoke tests for basic functionality",
     "regression: Full regression test suite",
     "web: Web UI tests using Playwright",
     "slow: Tests that take longer to execute",
+    "api: API tests using httpx",
 ]
 console_output_style = "progress"
 log_cli = true
@@ -109,5 +112,6 @@ line-ending = "auto"
 
 [dependency-groups]
 dev = [
+    "allure-pytest>=2.15.3",
     "pytest-playwright>=0.7.2",
 ]

@@ -8,7 +8,7 @@ TARGET_PROJECT_NAME = "python manufacture"
 EMPTY_PROJECT_NAME = "Electronics, Games & Industrial"
 
 
-@pytest.mark.smoke
+@pytest.mark.regression
 @pytest.mark.web
 def test_search_project(logged_app: Application):
     dashboard = logged_app.dashboard_page
@@ -29,6 +29,7 @@ def test_overview_project_card_details(logged_app: Application):
 
 
 @pytest.mark.web
+@pytest.mark.regression
 def test_open_project(logged_app: Application, configs: Config):
     dashboard_page = logged_app.dashboard_page
 
@@ -67,7 +68,7 @@ def test_dashboard_grid_is_not_empty(logged_app: Application):
     expect(dashboard.get_project_card_locator).not_to_have_count(0)
 
 
-@pytest.mark.web
+@pytest.mark.regression
 def test_create_new_project_navigation(logged_app: Application, configs: Config):
     dashboard = logged_app.dashboard_page
     dashboard.create_project()
@@ -84,7 +85,6 @@ def test_dashboard_table_is_not_empty(logged_app: Application):
 
 
 @pytest.mark.smoke
-@pytest.mark.web
 def test_switch_to_free_project(isolated_logged_app: Application):
     dashboard = isolated_logged_app.dashboard_page
     dashboard.wait_for_loaded()
@@ -97,7 +97,6 @@ def test_switch_to_free_project(isolated_logged_app: Application):
 
 
 @pytest.mark.smoke
-@pytest.mark.web
 def test_sign_out(isolated_logged_app: Application):
     dashboard = isolated_logged_app.dashboard_page
     login = isolated_logged_app.login_page

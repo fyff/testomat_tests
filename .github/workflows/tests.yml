@@ -150,8 +150,8 @@ jobs:
 
       - name: Install Allure CLI
         run: |
-          curl -sL https://github.com/allure-framework/allure2/releases/download/2.36.0/allure-2.36.0.tgz | tar -xz
-          echo "$PWD/allure-2.36.0/bin" >> $GITHUB_PATH
+          curl -sL https://github.com/allure-framework/allure2/releases/download/2.37.0/allure-2.37.0.tgz | tar -xz
+          echo "$PWD/allure-2.37.0/bin" >> $GITHUB_PATH
 
       - name: Generate Allure reports
         run: |
@@ -171,7 +171,7 @@ jobs:
           if [ -f report/regression/report.html ]; then
             cp report/regression/report.html pages/regression.html
           fi
-          echo "https://rmarinsky.github.io/testomat_tests_python/allure/smoke"
+          echo "https://fyff.github.io/testomat_tests_python/allure/smoke"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

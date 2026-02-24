@@ -26,6 +26,7 @@ class CrispChat:
 
         expect(self.chat_toggle).to_have_attribute("data-maximized", "true")
         expect(self.message_input).to_be_visible()
+        expect(self.message_input).to_be_enabled()
         return self
 
     def close(self) -> Self:

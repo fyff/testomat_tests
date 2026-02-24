@@ -20,7 +20,7 @@ def test_overview_projects_page_header(free_project_app: Application):
     expect(dashboard.search_input).to_have_value("My Awesome Project")
 
 
-@pytest.mark.smoke
+@pytest.mark.regression
 @pytest.mark.web
 def test_overview_free_plan_dashboard_elements(free_project_app: Application):
     dashboard = free_project_app.dashboard_page

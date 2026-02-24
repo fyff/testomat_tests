@@ -55,7 +55,7 @@ invalid_login_test_cases = [
 
 
 @pytest.mark.skip
-@pytest.mark.web
+@pytest.mark.regression
 @pytest.mark.parametrize(("email", "password"), invalid_login_test_cases)
 def test_login_invalid_creds(shared_page: Application, configs: Config, email: str, password: str, slow_down):
     if email == "config_email":
@@ -68,7 +68,6 @@ def test_login_invalid_creds(shared_page: Application, configs: Config, email: s
 
 
 @pytest.mark.smoke
-@pytest.mark.web
 def test_login_with_valid_creds(app: Application, configs: Config):
     landing_page = app.landing_page
     landing_page.open().click_login()

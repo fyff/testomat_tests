@@ -4,6 +4,7 @@ import os
 import time
 from pathlib import Path
 
+import allure
 import pytest
 from playwright.sync_api import Browser, BrowserContext, Page
 
@@ -17,6 +18,8 @@ from tests.fixtures.cookie_helper import (
 STORAGE_STATE_PATH = Path("test-result/.auth/storage_state.json")
 FREE_PROJECT_STORAGE_PATH = Path("test-result/.auth/free_project_state.json")
 SESSION_TTL = 86400
+
+IS_CI = os.getenv("CI", "false").lower() == "true"
 
 TRACE_OPTIONS = {
     "screenshots": True,
@@ -110,19 +113,20 @@ def build_browser_context(
     if base_url is None:
         raise ValueError("base_url must be provided and cannot be None. Check your environment variables.")
 
-    kwargs = {
+    kwargs: dict = {
         "base_url": base_url,
         "viewport": {"width": 1680, "height": 900},
         "locale": "en-GB",
         "timezone_id": "Europe/Kyiv",
         "permissions": ["geolocation"],
     }
-    if os.getenv("CI", "false").lower() != "true":
-        if record_video:
-            kwargs["record_video_dir"] = "test-result/videos/"
 
-        if storage_state and storage_state.exists():
-            kwargs["storage_state"] = str(storage_state)
+    if storage_state and storage_state.exists():
+        kwargs["storage_state"] = str(storage_state)
+
+    if not IS_CI and record_video:
+        kwargs["record_video_dir"] = "test-result/videos/"
+
     return browser.new_context(**kwargs)
 
 

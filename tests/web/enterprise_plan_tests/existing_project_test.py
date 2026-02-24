@@ -45,8 +45,6 @@ def test_create_folder_in_existing_project(api_client: ApiClient, logged_app: Ap
 
 @pytest.mark.order(2)
 @pytest.mark.smoke
-@pytest.mark.web
-@pytest.mark.regression
 def test_delete_project(api_client: ApiClient, logged_app: Application):
     projects = api_client.get_projects().data
     sorted_projects = sorted(projects, key=lambda x: x.attributes.created_at, reverse=True)
