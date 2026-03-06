@@ -41,6 +41,7 @@ def test_open_project(logged_app: Application, configs: Config):
     expect(logged_app.page.locator("#ember42")).to_have_text("Python manufacture")
 
 
+@pytest.mark.smoke
 @pytest.mark.web
 def test_verify_subscription_plan(logged_app: Application):
     dashboard = logged_app.dashboard_page

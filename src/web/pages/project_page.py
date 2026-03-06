@@ -1,3 +1,4 @@
+import re
 from typing import Self
 
 from playwright.sync_api import Page, expect
@@ -138,7 +139,7 @@ class ProjectPage:
         self.project_title_link = self.breadcrumbs.locator("a.active")
 
         self.filter_button = page.locator(".filterbar-filter-btn-div button")
-        self.search_input = page.get_by_placeholder("Search [Cmd + K]")
+        self.search_input = page.get_by_placeholder(re.compile(r"Search \[(Cmd|Ctrl) \+ K\]"))
         self.tune_button = page.locator("button:has(.md-icon-tune)")
 
         self.test_button = page.get_by_role("button", name="Test", exact=True)
