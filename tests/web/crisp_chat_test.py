@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from playwright.sync_api import expect
 
@@ -6,6 +8,7 @@ from tests.fixtures.config import Config
 
 
 @pytest.mark.regression
+@pytest.mark.skipif(os.getenv("CI") == "true", reason="Crisp chat widget does not load in headless/CI environments")
 def test_crisp_chat_overview(isolated_logged_app: Application, configs: Config):
     isolated_logged_app.dashboard_page.wait_for_loaded()
     chat = isolated_logged_app.crisp_chat.wait_for_loaded()
