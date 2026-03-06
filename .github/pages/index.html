@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Testomat E2E Test Reports</title>
     <style>
         body {
@@ -39,20 +39,26 @@
         }
         .btn-smoke { background-color: #28a745; }
         .btn-smoke:hover { background-color: #218838; }
+        .btn-api { background-color: #6f42c1; }
+        .btn-api:hover { background-color: #59359a; }
+        .btn-web { background-color: #fd7e14; }
+        .btn-web:hover { background-color: #e8590c; }
         .btn-regression { background-color: #007bff; }
         .btn-regression:hover { background-color: #0069d9; }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>E2E Test Reports</h1>
-    <div class="report-links">
-        <a class="btn btn-smoke" href="allure/smoke/index.html">Smoke Test Report</a>
-        <a class="btn btn-regression" href="allure/regression/index.html">Regression Test Report</a>
+    <div class="container">
+        <h1>E2E Test Reports</h1>
+        <div class="report-links">
+            <a href="allure/smoke/index.html" class="btn btn-smoke">Smoke Test Report</a>
+            <a href="allure/api/index.html" class="btn btn-api">API Test Report</a>
+            <a href="allure/web/index.html" class="btn btn-web">Web UI Test Report</a>
+            <a href="allure/regression/index.html" class="btn btn-regression">Regression Test Report</a>
+        </div>
+        <p style="margin-top: 1.5rem; font-size: 0.9rem; color: #666;">
+            If a report is missing, the suite might not have been run for this build.
+        </p>
     </div>
-    <p style="margin-top: 1.5rem; font-size: 0.9rem; color: #666;">
-        If a report is missing, the suite might not have been run for this build.
-    </p>
-</div>
 </body>
 </html>
