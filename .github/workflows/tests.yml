@@ -14,6 +14,7 @@ on:
         type: choice
         options:
           - smoke
+          - api
           - web
           - regression
           - all
@@ -44,7 +45,7 @@ jobs:
         github.event_name == 'pull_request' ||
         github.event_name == 'schedule' ||
         (github.event_name == 'workflow_dispatch' &&
-         (inputs.test_suite == 'smoke' || inputs.test_suite == 'all'))
+         (inputs.test_suite == 'smoke' || inputs.test_suite == 'web' || inputs.test_suite == 'all'))
       )
     permissions:
       contents: read
@@ -94,7 +95,7 @@ jobs:
         github.event_name == 'pull_request' ||
         github.event_name == 'schedule' ||
         (github.event_name == 'workflow_dispatch' &&
-         (inputs.test_suite == 'smoke' || inputs.test_suite == 'all'))
+         (inputs.test_suite == 'api' || inputs.test_suite == 'all'))
       )
     permissions:
       contents: read
@@ -133,8 +134,7 @@ jobs:
       always() && github.actor != 'dependabot[bot]' && (
         (github.event_name == 'pull_request' && needs.smoke-tests.result == 'success' && needs.api-tests.result == 'success') ||
         (github.event_name == 'schedule' && needs.smoke-tests.result == 'success' && needs.api-tests.result == 'success') ||
-        (github.event_name == 'workflow_dispatch' && inputs.test_suite == 'all' && needs.smoke-tests.result == 'success' && needs.api-tests.result == 'success') ||
-        (github.event_name == 'workflow_dispatch' && inputs.test_suite == 'regression')
+        (github.event_name == 'workflow_dispatch' && (inputs.test_suite == 'regression' || inputs.test_suite == 'web' || inputs.test_suite == 'all'))
       )
     permissions:
       contents: read
