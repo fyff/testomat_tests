@@ -40,10 +40,12 @@ jobs:
   smoke-tests:
     runs-on: ubuntu-latest
     if: >
-      github.event_name == 'pull_request' ||
-      github.event_name == 'schedule' ||
-      (github.event_name == 'workflow_dispatch' &&
-       (inputs.test_suite == 'smoke' || inputs.test_suite == 'all'))
+      github.actor != 'dependabot[bot]' && (
+        github.event_name == 'pull_request' ||
+        github.event_name == 'schedule' ||
+        (github.event_name == 'workflow_dispatch' &&
+         (inputs.test_suite == 'smoke' || inputs.test_suite == 'all'))
+      )
     permissions:
       contents: read
     steps:
@@ -89,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ smoke-tests ]
     if: >
-      always() && (
+      always() && github.actor != 'dependabot[bot]' && (
         (github.event_name == 'pull_request' && needs.smoke-tests.result == 'success') ||
         (github.event_name == 'schedule' && needs.smoke-tests.result == 'success') ||
         (github.event_name == 'workflow_dispatch' && inputs.test_suite == 'all' && needs.smoke-tests.result == 'success') ||
