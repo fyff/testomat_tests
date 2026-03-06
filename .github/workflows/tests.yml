@@ -90,6 +90,7 @@ jobs:
     needs: [ smoke-tests ]
     if: >
       always() && (
+        (github.event_name == 'pull_request' && needs.smoke-tests.result == 'success') ||
         (github.event_name == 'schedule' && needs.smoke-tests.result == 'success') ||
         (github.event_name == 'workflow_dispatch' && inputs.test_suite == 'all' && needs.smoke-tests.result == 'success') ||
         (github.event_name == 'workflow_dispatch' && inputs.test_suite == 'regression')
@@ -149,9 +150,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Download smoke Allure results
         if: needs.smoke-tests.result != 'skipped'
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: smoke-allure-results
           path: allure-results/smoke
@@ -159,6 +162,7 @@ jobs:
       - name: Download regression Allure results
         if: needs.regression-tests.result != 'skipped'
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: regression-allure-results
           path: allure-results/regression
@@ -180,12 +184,7 @@ jobs:
       - name: Prepare Pages content
         run: |
           mkdir -p pages
-          if [ -d pages/allure/smoke ]; then
-            cp .github/pages/index.html pages/index.html
-          fi
-          if [ -d pages/allure/regression ]; then
-            cp .github/pages/index.html pages/regression.html
-          fi
+          cp .github/pages/index.html pages/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
