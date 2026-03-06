@@ -1,0 +1,117 @@
+[project]
+name = "testomat_tests"
+version = "0.1.0"
+description = "Playwright-based E2E testing framework for Testomat application"
+requires-python = ">=3.14"
+dependencies = [
+    "faker>=40.1.0",
+    "pytest>=9.0.2",
+    "pytest-html>=4.1.1",
+    "python-dotenv>=1.2.1",
+    "playwright>=1.57.0",
+    "pytest-playwright>=0.7.2",
+    "ruff>=0.14.12",
+    "httpx>=0.28.1",
+    "pytest-order>=1.3.0",
+    "selenium>=4.40.0",
+    "allure-pytest>=2.15.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.14.12",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/web"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py", "*_tests.py"]
+python_functions = ["test_*"]
+norecursedirs = [".git", ".venv", ".idea", "__pycache__", "build", "dist"]
+addopts = [
+    "-v", # Verbose output - shows individual test names
+    "-ra", # Shows summary of all test outcomes except passed (r=report, a=all except passed)
+    "--strict-markers", # Raises error if using undefined markers (enforces marker registration)
+    "--tb=short", # Short traceback format for failures (less verbose than full)
+    "--tracing=retain-on-failure", # Playwright: enables trace recording for debugging
+    "--screenshot=only-on-failure", # Playwright: captures screenshots on failure
+    "--video=on", # Playwright: captures video recordings of tests (manually cleaned up in fixtures)
+    "--output=test-result/traces", # Playwright: directory for trace files
+    "--html=test-result/report.html", # pytest-html plugin: generates HTML report at this path
+    "--self-contained-html", # Embeds CSS/JS in HTML report (single file, no external dependencies)
+    "--alluredir=./test-result/allure-results",
+]
+markers = [
+    "smoke: Quick smoke tests for basic functionality",
+    "regression: Full regression test suite",
+    "web: Web UI tests using Playwright",
+    "slow: Tests that take longer to execute",
+    "api: API tests using httpx",
+]
+console_output_style = "progress"
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)s] %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+xfail_strict = true
+
+[tool.ruff]
+target-version = "py314"
+line-length = 120
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "test-result",
+]
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # Pyflakes
+    "I", # isort (Imports)
+    "B", # flake8-bugbear (Common bugs)
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade (Modernize syntax)
+    "SIM", # flake8-simplify
+    "RUF", # Ruff-specific rules
+    "PT", # flake8-pytest-style (HIGHLY recommended for your project)
+    "T20", # flake8-print (Ensures you don't leave print() in tests; use logging)
+]
+ignore = [
+    "E501", # Line too long (formatter handles this)
+    "B008", # Function calls in defaults (needed for some DI patterns)
+    "PT001", # Use @pytest.fixture() without parentheses (personal preference, optional)
+    "PT003", # `scope='function'` is implied in ` @pytest.fixture()`
+]
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.isort]
+# This helps Ruff distinguish between your code and third-party libs
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+known-first-party = ["src", "tests"]
+
+[tool.ruff.lint.per-file-ignores]
+# Use 'S' (flake8-bandit) ignores for tests if you add security linting later
+"tests/*" = ["B011", "T201"]  # Allow assert and print in actual test files
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[dependency-groups]
+dev = [
+    "allure-pytest>=2.15.3",
+    "pytest-playwright>=0.7.2",
+]
