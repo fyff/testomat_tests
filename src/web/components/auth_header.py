@@ -73,7 +73,13 @@ class AuthHeader:
         self.global_search_btn.click()
 
     def open_user_menu(self):
-        if not self.profile_menu.is_visible():
+        if self.profile_menu.is_hidden():
+            self.profile_avatar.click()
+
+        try:
+            expect(self.profile_menu).to_be_visible(timeout=3000)
+        except AssertionError:
+            # Retry click if menu didn't appear (handles potential JS not ready or lost clicks)
             self.profile_avatar.click()
             expect(self.profile_menu).to_be_visible()
 

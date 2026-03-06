@@ -140,9 +140,10 @@ def build_browser_context(
 
 
 def perform_login(page: Page, email: str, password: str) -> bool:
-    """Performs login steps on the given page."""
+    """Performs login steps on the given page and waits for dashboard load."""
     app = Application(page)
     app.login_page.open().login(email, password)
+    app.dashboard_page.wait_for_loaded()
     return True
 
 
@@ -189,10 +190,12 @@ def logged_app(
     context = build_browser_context(browser_instance, configs.app_base_url, storage_state=auth_state)
     context.tracing.start(**TRACE_OPTIONS)
     page = context.new_page()
-    page.goto("/projects")
+
+    app = Application(page)
+    app.dashboard_page.open()
 
     with cleanup_artifacts(context, page, request):
-        yield Application(page)
+        yield app
 
 
 @pytest.fixture(scope="function")
@@ -215,10 +218,12 @@ def free_project_app(
     context = build_browser_context(browser_instance, configs.app_base_url, storage_state=free_auth_state)
     context.tracing.start(**TRACE_OPTIONS)
     page = context.new_page()
-    page.goto("/projects")
+
+    app = Application(page)
+    app.dashboard_page.open()
 
     with cleanup_artifacts(context, page, request):
-        yield Application(page)
+        yield app
 
 
 @pytest.fixture(scope="function")
