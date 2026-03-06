@@ -19,6 +19,7 @@ def test_create_suite_in_existing_project(api_client: ApiClient, logged_app: App
         .wait_for_loaded(is_folder=False)
         .fill_title(suite_name)
         .click_save()
+        .close_detail_view()
     )
 
     logged_app.project_page.verify_suite_present(suite_name)
@@ -38,6 +39,7 @@ def test_create_folder_in_existing_project(api_client: ApiClient, logged_app: Ap
         .wait_for_loaded(is_folder=True)
         .fill_title(folder_name)
         .click_save()
+        .close_detail_view()
     )
 
     logged_app.project_page.verify_suite_present(folder_name)

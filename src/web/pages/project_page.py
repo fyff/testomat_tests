@@ -48,6 +48,7 @@ class CreateSuiteModal:
         self.title_input = self.container.get_by_placeholder("Title")
         self.save_button = self.container.get_by_role("button", name="Save")
         self.cancel_button = self.container.get_by_role("link", name="Cancel")
+        self.close_button = self.container.get_by_role("button").filter(has=page.locator(".md-icon-close")).first
 
     def wait_for_loaded(self, is_folder: bool = True) -> Self:
         expect(self.container).to_be_visible()
@@ -61,6 +62,7 @@ class CreateSuiteModal:
 
     def click_save(self) -> ProjectPage:
         self.save_button.click()
+        expect(self.save_button).to_be_hidden()
         return ProjectPage(self.page)
 
 
@@ -69,7 +71,7 @@ class CreateTestsFromRequirementModal:
         self.page = page
         self.container = page.locator(".ember-modal-dialog").filter(has_text="Create Tests from Requirement")
         self.title = self.container.locator("h3")
-        self.close_button = self.container.locator("button:has(.md-icon-close)")
+        self.close_button = self.container.get_by_role("button").filter(has=page.locator(".md-icon-close")).first
         self.search_input = self.container.get_by_placeholder("Search requirements...")
         self.create_new_requirement_button = self.container.get_by_role("button", name="Create New Requirement")
         self.cancel_button = self.container.get_by_role("button", name="Cancel")
@@ -204,4 +206,11 @@ class ProjectPage:
 
     def verify_suite_present(self, suite_name: str) -> Self:
         expect(self.get_suite_locator(suite_name)).to_be_visible()
+        return self
+
+    def close_detail_view(self) -> Self:
+        close_button = self.page.get_by_role("button").filter(has=self.page.locator(".md-icon-close")).first
+        if close_button.is_visible():
+            close_button.click()
+            expect(close_button).to_be_hidden()
         return self
