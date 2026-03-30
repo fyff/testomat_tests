@@ -37,8 +37,7 @@ def test_open_project(logged_app: Application, configs: Config):
     project.open()
 
     expect(logged_app.page).to_have_url(configs.app_base_url + "/projects/pythonmanufacture/")
-    expect(logged_app.page.locator("#ember42")).to_be_visible()
-    expect(logged_app.page.locator("#ember42")).to_have_text("Python manufacture")
+    logged_app.project_page.verify_project_loaded("Python manufacture")
 
 
 @pytest.mark.web
