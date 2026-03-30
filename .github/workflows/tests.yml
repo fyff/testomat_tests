@@ -1,4 +1,4 @@
-name: E2E Tests
+name: '🧪 E2E Tests'
 
 on:
   pull_request:
@@ -21,24 +21,26 @@ on:
 
 jobs:
   lint:
+    name: '🧹 Lint'
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     permissions:
       contents: read
     steps:
-      - name: Checkout
+      - name: '📂 Checkout'
         uses: actions/checkout@v6
 
-      - name: Setup environment
+      - name: '⚙️ Setup environment'
         uses: ./.github/actions/setup
 
-      - name: Run Ruff linter
+      - name: '🔍 Run Ruff linter'
         run: uv run ruff check .
 
-      - name: Run Ruff formatter check
+      - name: '🎨 Run Ruff formatter check'
         run: uv run ruff format --check .
 
   smoke-tests:
+    name: '💨 Smoke Tests'
     runs-on: ubuntu-latest
     if: >
       github.actor != 'dependabot[bot]' && (
@@ -50,15 +52,15 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Checkout
+      - name: '📂 Checkout'
         uses: actions/checkout@v6
 
-      - name: Setup environment
+      - name: '⚙️ Setup environment'
         uses: ./.github/actions/setup
         with:
           install-playwright: 'true'
 
-      - name: Run smoke tests
+      - name: '🚀 Run smoke tests'
         env:
           CI: true
           BASE_URL: ${{ secrets.BASE_URL }}
@@ -68,7 +70,7 @@ jobs:
           TESTOMAT_GENERAL_TOKEN: ${{ secrets.TESTOMAT_GENERAL_TOKEN }}
         run: uv run pytest -m smoke --tb=short --no-header
 
-      - name: Upload Allure results
+      - name: '📤 Upload Allure results'
         if: always()
         uses: actions/upload-artifact@v7
         with:
@@ -77,7 +79,7 @@ jobs:
           retention-days: 5
           if-no-files-found: warn
 
-      - name: Upload traces
+      - name: '🎞️ Upload traces'
         if: failure()
         uses: actions/upload-artifact@v7
         with:
@@ -89,6 +91,7 @@ jobs:
 
 
   api-tests:
+    name: '📡 API Tests'
     runs-on: ubuntu-latest
     if: >
       github.actor != 'dependabot[bot]' && (
@@ -100,13 +103,13 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Checkout
+      - name: '📂 Checkout'
         uses: actions/checkout@v6
 
-      - name: Setup environment
+      - name: '⚙️ Setup environment'
         uses: ./.github/actions/setup
 
-      - name: Run API tests
+      - name: '🚀 Run API tests'
         env:
           CI: true
           BASE_URL: ${{ secrets.BASE_URL }}
@@ -116,7 +119,7 @@ jobs:
           TESTOMAT_GENERAL_TOKEN: ${{ secrets.TESTOMAT_GENERAL_TOKEN }}
         run: uv run pytest -m api --tb=short --no-header
 
-      - name: Upload Allure results
+      - name: '📤 Upload Allure results'
         if: always()
         uses: actions/upload-artifact@v7
         with:
@@ -128,6 +131,7 @@ jobs:
 
 
   web-tests:
+    name: '🌐 Web UI Tests'
     runs-on: ubuntu-latest
     if: >
       github.actor != 'dependabot[bot]' && (
@@ -137,15 +141,15 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Checkout
+      - name: '📂 Checkout'
         uses: actions/checkout@v6
 
-      - name: Setup environment
+      - name: '⚙️ Setup environment'
         uses: ./.github/actions/setup
         with:
           install-playwright: 'true'
 
-      - name: Run Web UI tests
+      - name: '🚀 Run Web UI tests'
         env:
           CI: true
           BASE_URL: ${{ secrets.BASE_URL }}
@@ -155,7 +159,7 @@ jobs:
           TESTOMAT_GENERAL_TOKEN: ${{ secrets.TESTOMAT_GENERAL_TOKEN }}
         run: uv run pytest -m web --tb=short --no-header
 
-      - name: Upload Allure results
+      - name: '📤 Upload Allure results'
         if: always()
         uses: actions/upload-artifact@v7
         with:
@@ -164,7 +168,7 @@ jobs:
           retention-days: 5
           if-no-files-found: warn
 
-      - name: Upload traces
+      - name: '🎞️ Upload traces'
         if: failure()
         uses: actions/upload-artifact@v7
         with:
@@ -176,6 +180,7 @@ jobs:
 
 
   regression-tests:
+    name: '🔄 Regression Tests'
     runs-on: ubuntu-latest
     needs: [ smoke-tests, api-tests ]
     if: >
@@ -187,15 +192,15 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Checkout
+      - name: '📂 Checkout'
         uses: actions/checkout@v6
 
-      - name: Setup environment
+      - name: '⚙️ Setup environment'
         uses: ./.github/actions/setup
         with:
           install-playwright: 'true'
 
-      - name: Run regression tests
+      - name: '🚀 Run regression tests'
         env:
           CI: true
           BASE_URL: ${{ secrets.BASE_URL }}
@@ -205,7 +210,7 @@ jobs:
           TESTOMAT_GENERAL_TOKEN: ${{ secrets.TESTOMAT_GENERAL_TOKEN }}
         run: uv run pytest -m regression --tb=short --no-header
 
-      - name: Upload Allure results
+      - name: '📤 Upload Allure results'
         if: always()
         uses: actions/upload-artifact@v7
         with:
@@ -214,7 +219,7 @@ jobs:
           retention-days: 5
           if-no-files-found: warn
 
-      - name: Upload traces
+      - name: '🎞️ Upload traces'
         if: failure()
         uses: actions/upload-artifact@v7
         with:
@@ -226,6 +231,7 @@ jobs:
 
 
   publish-report:
+    name: '📊 Publish Report'
     runs-on: ubuntu-latest
     needs: [ smoke-tests, api-tests, web-tests, regression-tests ]
     if: always() && (needs.smoke-tests.result != 'skipped' || needs.api-tests.result != 'skipped' || needs.web-tests.result != 'skipped' || needs.regression-tests.result != 'skipped')
@@ -237,10 +243,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
+      - name: '📂 Checkout'
         uses: actions/checkout@v6
 
-      - name: Download smoke Allure results
+      - name: '📥 Download smoke Allure results'
         if: needs.smoke-tests.result != 'skipped'
         uses: actions/download-artifact@v8
         continue-on-error: true
@@ -248,7 +254,7 @@ jobs:
           name: smoke-allure-results
           path: allure-results/smoke
 
-      - name: Download API Allure results
+      - name: '📥 Download API Allure results'
         if: needs.api-tests.result != 'skipped'
         uses: actions/download-artifact@v8
         continue-on-error: true
@@ -256,7 +262,7 @@ jobs:
           name: api-allure-results
           path: allure-results/api
 
-      - name: Download web Allure results
+      - name: '📥 Download web Allure results'
         if: needs.web-tests.result != 'skipped'
         uses: actions/download-artifact@v8
         continue-on-error: true
@@ -264,7 +270,7 @@ jobs:
           name: web-allure-results
           path: allure-results/web
 
-      - name: Download regression Allure results
+      - name: '📥 Download regression Allure results'
         if: needs.regression-tests.result != 'skipped'
         uses: actions/download-artifact@v8
         continue-on-error: true
@@ -272,12 +278,12 @@ jobs:
           name: regression-allure-results
           path: allure-results/regression
 
-      - name: Install Allure CLI
+      - name: '⚙️ Install Allure CLI'
         run: |
           curl -sL https://github.com/allure-framework/allure2/releases/download/2.37.0/allure-2.37.0.tgz | tar -xz
           echo "$PWD/allure-2.37.0/bin" >> $GITHUB_PATH
 
-      - name: Generate Allure reports
+      - name: '📊 Generate Allure reports'
         run: |
           if [ -d allure-results/smoke ]; then
             allure generate allure-results/smoke -o pages/allure/smoke --clean
@@ -295,19 +301,19 @@ jobs:
             allure generate allure-results/regression -o pages/allure/regression --clean
           fi
 
-      - name: Prepare Pages content
+      - name: '📂 Prepare Pages content'
         run: |
           mkdir -p pages
           cp .github/pages/index.html pages/index.html
 
-      - name: Configure Pages
+      - name: '⚙️ Configure Pages'
         uses: actions/configure-pages@v5
 
-      - name: Upload Pages artifact
+      - name: '📤 Upload Pages artifact'
         uses: actions/upload-pages-artifact@v4
         with:
           path: pages
 
-      - name: Deploy to GitHub Pages
+      - name: '🚀 Deploy to GitHub Pages'
         id: deployment
         uses: actions/deploy-pages@v5
